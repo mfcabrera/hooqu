@@ -2,9 +2,6 @@
 Credits
 =======
 
-Development Lead
-----------------
-
 * Miguel Cabrera <mfcabrera@gmail.com>
 
 Contributors

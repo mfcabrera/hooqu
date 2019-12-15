@@ -11,9 +11,6 @@ Tests for `jukumari` module.
 import pytest
 
 
-from jukumari import jukumari
-
-
 @pytest.fixture
 def response():
     """Sample pytest fixture.

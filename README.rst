@@ -18,9 +18,6 @@ jukumari
      :alt: Updates
 
 
-Python Boilerplate contains all the boilerplate you need to create a Python package.
-
-
 * Free software: Apache Software License 2.0
 * Documentation: https://jukumari.readthedocs.io.
 
@@ -37,4 +34,3 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 
 .. _Cookiecutter: https://github.com/audreyr/cookiecutter
 .. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
-

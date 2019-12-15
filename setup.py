@@ -20,7 +20,7 @@ test_requirements = [
 setup(
     name='jukumari',
     version='0.1.0',
-    description="Python Boilerplate contains all the boilerplate you need to create a Python package.",
+    description="Data unit testing for you Python DataFrames",
     long_description=readme + '\n\n' + history,
     author="Miguel Cabrera",
     author_email='mfcabrera@gmail.com',
