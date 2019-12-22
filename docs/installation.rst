@@ -8,13 +8,13 @@ Installation
 Stable release
 --------------
 
-To install jukumari, run this command in your terminal:
+To install hooqu, run this command in your terminal:
 
 .. code-block:: console
 
-    $ pip install jukumari
+    $ pip install hooqu
 
-This is the preferred method to install jukumari, as it will always install the most recent stable release. 
+This is the preferred method to install hooqu, as it will always install the most recent stable release.
 
 If you don't have `pip`_ installed, this `Python installation guide`_ can guide
 you through the process.
@@ -26,19 +26,19 @@ you through the process.
 From sources
 ------------
 
-The sources for jukumari can be downloaded from the `Github repo`_.
+The sources for hooqu can be downloaded from the `Github repo`_.
 
 You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/mfcabrera/jukumari
+    $ git clone git://github.com/mfcabrera/hooqu
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/mfcabrera/jukumari/tarball/master
+    $ curl  -OL https://github.com/mfcabrera/hooqu/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +47,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/mfcabrera/jukumari
-.. _tarball: https://github.com/mfcabrera/jukumari/tarball/master
+.. _Github repo: https://github.com/mfcabrera/hooqu
+.. _tarball: https://github.com/mfcabrera/hooqu/tarball/master

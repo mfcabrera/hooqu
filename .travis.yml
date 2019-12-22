@@ -28,5 +28,5 @@ deploy:
     secure: PLEASE_REPLACE_ME
   on:
     tags: true
-    repo: mfcabrera/jukumari
+    repo: mfcabrera/hooqu
     condition: $TOXENV == py27

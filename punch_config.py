@@ -6,6 +6,6 @@ GLOBALS = {
 }
 
 
-FILES = ["setup.py", "jukumari/__init__.py"]
+FILES = ["setup.py", "hooqu/__init__.py"]
 
 VERSION = ['major', 'minor', 'patch']

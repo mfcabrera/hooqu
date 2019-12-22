@@ -1,4 +1,4 @@
-Welcome to jukumari's documentation!
+Welcome to hooqu's documentation!
 ======================================
 
 Contents:

@@ -2,6 +2,6 @@
 Usage
 =====
 
-To use jukumari in a project::
+To use hooqu in a project::
 
-    import jukumari
+    import hooqu

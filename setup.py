@@ -18,23 +18,23 @@ test_requirements = [
 ]
 
 setup(
-    name='jukumari',
+    name='hooqu',
     version='0.1.0',
     description="Data unit testing for you Python DataFrames",
     long_description=readme + '\n\n' + history,
     author="Miguel Cabrera",
     author_email='mfcabrera@gmail.com',
-    url='https://github.com/mfcabrera/jukumari',
+    url='https://github.com/mfcabrera/hooqu',
     packages=[
-        'jukumari',
+        'hooqu',
     ],
-    package_dir={'jukumari':
-                 'jukumari'},
+    package_dir={'hooqu':
+                 'hooqu'},
     include_package_data=True,
     install_requires=requirements,
     license="Apache Software License 2.0",
     zip_safe=False,
-    keywords='jukumari',
+    keywords='hooqu',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
