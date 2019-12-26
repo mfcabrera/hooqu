@@ -9,3 +9,4 @@ tox
 coverage
 pytest
 pytest-cov
+black
