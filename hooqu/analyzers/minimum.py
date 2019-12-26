@@ -1,7 +1,9 @@
 from dataclasses import dataclass
-from typing import Optional, Sequence
+from typing import Callable, List, Optional, Sequence
 
-from hooqu.analyzers.analyzer import DoubledValuedState, StandardScanShareableAnalyzer
+from hooqu.analyzers.analyzer import (DoubledValuedState,
+                                      StandardScanShareableAnalyzer)
+from hooqu.analyzers.preconditions import has_column, is_numeric
 from hooqu.generic import DataFrame
 
 
@@ -35,3 +37,6 @@ class Minimum(StandardScanShareableAnalyzer[MinState]):
         # with Pandas-like dataqqqqframe the where clqqqause need to be evaluated
         # before as the API does not get translated into SQL as with spark
         return ("min",)
+
+    def additional_preconditions(self) -> List[Callable[[DataFrame], None]]:
+        return [has_column(self.instance), is_numeric(self.instance)]

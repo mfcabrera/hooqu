@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, Sequence, Iterable, Optional, Callable
+from typing import Generic, TypeVar, Sequence, Optional, Callable, List
 from dataclasses import dataclass
 
 from tryingsnake import Success, Failure
@@ -11,22 +11,12 @@ from hooqu.metrics import Metric, Entity, DoubleMetric
 S = TypeVar("S")
 
 
-def metric_from_value(
-    value: float, name: str, instance: str, entity: Entity
-) -> DoubleMetric:
-    return DoubleMetric(entity, name, instance, Success(value))
+class MetricCalculationException(Exception):
+    pass
 
 
-def metric_from_failure(
-    ex: Exception, name: str, instance: str, entity: Entity
-) -> DoubleMetric:
-    return DoubleMetric(entity, name, instance, Failure(ex))
-
-
-# FIXME
-def metric_from_empty():
-    # FIXME:
-    return "EMPTY METRIC"
+class EmptyStateException(MetricCalculationException):
+    pass
 
 
 class State(ABC, Generic[S]):
@@ -62,7 +52,10 @@ class Analyzer(ABC):
     def _to_failure_metric(self, ex: Exception) -> Metric:
         pass
 
-    def preconditions(self) -> Iterable[Callable[[DataFrame], None]]:
+    def preconditions(self) -> List[Callable[[DataFrame], None]]:
+        return []
+
+    def additional_preconditions(self) -> List[Callable[[DataFrame], None]]:
         return []
 
     def calculate(
@@ -176,8 +169,7 @@ class StandardScanShareableAnalyzer(ScanShareableAnalyzer, Generic[S]):
             )
 
         else:
-            # TODO: return empty metric
-            return None
+            return metric_from_empty(self, self.name, self.instance, self.entity)
 
     def compute_state_from(self, data: DataFrame) -> Optional[DoubledValuedState]:
         # first get what aggregations we need to perform on the raw dataframe
@@ -189,9 +181,34 @@ class StandardScanShareableAnalyzer(ScanShareableAnalyzer, Generic[S]):
 
         result = data.agg(aggregations)
         # Now make sense of the results
-        # print(result)
-
         return self._from_aggregation_result(result, 0)
 
     def _to_failure_metric(self, ex: Exception) -> DoubleMetric:
         return metric_from_failure(ex, self.name, self.instance, self.entity)
+
+    def preconditions(self) -> List[Callable[[DataFrame], None]]:
+        return self.additional_preconditions() + super().preconditions()
+
+
+def metric_from_value(
+    value: float, name: str, instance: str, entity: Entity
+) -> DoubleMetric:
+    return DoubleMetric(entity, name, instance, Success(value))
+
+
+def metric_from_failure(
+    ex: Exception, name: str, instance: str, entity: Entity
+) -> DoubleMetric:
+    return DoubleMetric(entity, name, instance, Failure(ex))
+
+
+def metric_from_empty(
+        analyzer: Analyzer,
+        name: str,
+        instance: str,
+        entity: Entity = Entity.COLUMN
+):
+    e = EmptyStateException(
+        "Empty state for analyzer {analyzer}, all input values were None."
+    )
+    return metric_from_failure(e, name, instance, entity)

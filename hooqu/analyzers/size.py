@@ -34,7 +34,7 @@ class Size(StandardScanShareableAnalyzer):
 
     def _aggregation_functions(self, where: Optional[str] = None) -> Sequence[str]:
         # Defines the aggregations to compute on the data
-        # TODO: Habdle the ConditionalCount for a dataframe
+        # TODO: handle the ConditionalCount for a dataframe
         # in the original implementation  here a Spark.Column is returned
         # with using the "SUM (exp(where)) As LONG INT"
         # with Pandas-like dataframe the where cluse need to be evaluated
