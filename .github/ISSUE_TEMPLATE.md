@@ -1,4 +1,4 @@
-* jukumari version:
+* hooqu version:
 * Python version:
 * Operating System:
 
