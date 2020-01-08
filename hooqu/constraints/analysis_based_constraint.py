@@ -13,7 +13,7 @@ _ASSERTION_EXCEPTION_MSG = "Can't execute the assertion"
 class ConstraintAssertionException(Exception):
     pass
 
-
+# FIXME: Fix documentation
 class AnalysisBasedConstraint(Constraint):
     """
     Common functionality for all analysis based constraints that provides unified way to access
@@ -72,7 +72,7 @@ class AnalysisBasedConstraint(Constraint):
                     return ConstraintResult(self, ConstraintStatus.SUCESS)
                 else:
                     msg = (
-                        f"Value {assert_on} does not meet the constraint requirement."
+                        f"Value {assert_on} does not meet the constraint requirement. "
                         f"{hint}"
                     )
                     return ConstraintResult(self, ConstraintStatus.FAILURE, msg, metric)

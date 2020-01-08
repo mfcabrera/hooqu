@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import Enum
 from typing import Optional, Mapping
 
@@ -17,9 +17,9 @@ class Constraint(ABC):
     # Common trait for all data quality constraints
 
     @abstractmethod
-    def evaluate(self, analysis_result: Mapping[Analyzer, Metric]):
-        # FIXME: # Should return ConstrainResult but you can only
-        # Define recursive types in Python > 3.8
+    def evaluate(
+        self, analysis_result: Mapping[Analyzer, Metric]
+    ) -> "ConstraintResult":
         pass
 
 
@@ -29,3 +29,36 @@ class ConstraintResult:
     status: ConstraintStatus
     message: Optional[str] = None
     metric: Optional[Metric] = None
+
+
+class ConstraintDecorator(Constraint):
+    def __init__(self, inner: Constraint):
+        self._inner = inner
+
+    @property
+    def inner(self) -> Constraint:
+        """I'm the 'x' property."""
+        if isinstance(self._inner, ConstraintDecorator):
+            return self._inner.inner
+        else:
+            return self._inner
+
+    def evaluate(
+        self, analysis_result: Mapping[Analyzer, Metric]
+    ) -> "ConstraintResult":
+
+        return replace(self._inner.evaluate(analysis_result), constraint=self)
+
+
+@dataclass
+class NamedConstraint(ConstraintDecorator):
+    constraint: Constraint
+    name: str
+
+    def __init__(self, constraint: Constraint, name: str):
+        super().__init__(constraint)
+        self.name = name
+        self.constraint = constraint
+
+    def __str__(self):
+        return self.name

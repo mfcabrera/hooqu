@@ -11,6 +11,7 @@ from hooqu.metrics import Metric, Entity, DoubleMetric
 S = TypeVar("S")
 
 
+# TODO: evcentually move to corresponding files
 class MetricCalculationException(Exception):
     pass
 
