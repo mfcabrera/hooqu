@@ -19,7 +19,7 @@ class Metric(Generic[M]):
     entity: Entity
     instance: str
     name: str
-    value: Try_[M]
+    value: Try_
 
     # FIXME: Proper work
     def flatten(self) -> Sequence[Any]:

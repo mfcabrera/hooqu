@@ -1,11 +1,14 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, List, Optional, Set, cast, Sequence, Tuple
 
+from hooqu.analyzers import Analyzer
 
 from hooqu.constraints import (
     Constraint,
+    ConstraintDecorator,
     ConstraintResult,
+    AnalysisBasedConstraint,
     min_constraint,
     size_constraint,
 )
@@ -22,22 +25,21 @@ class CheckStatus(Enum):
     ERROR = 2
 
 
-@dataclass
+@dataclass(frozen=True, eq=True)
 class CheckResult:
     check: Any
     status: CheckStatus
-    constraint_results: List[ConstraintResult]
+    constraint_results: Sequence[ConstraintResult] = field(default_factory=tuple)
 
 
-@dataclass
+@dataclass(frozen=True, eq=True)
 class Check:
     level: CheckLevel
     description: str
-    constraints: List[Constraint] = field(default_factory=list)
+    constraints: Tuple[Constraint, ...] = field(default_factory=tuple)
 
     def add_constraint(self, constraint: Constraint) -> "Check":
-
-        return Check(self.level, self.description, self.constraints + [constraint])
+        return Check(self.level, self.description, self.constraints + (constraint,))
 
     def add_filterable_constraint(
         self, creation_func: Callable[[Optional[str]], Constraint]
@@ -47,9 +49,26 @@ class Check:
         return CheckWithLastConstraintFilterable(
             self.level,
             self.description,
-            self.constraints + [constraint_without_filtering],
+            self.constraints + (constraint_without_filtering,),
             creation_func,
         )
+
+    def required_analyzers(self) -> Set[Analyzer]:
+        #   This functionality does not make a lot sense for Pandas
+        #   but for porting purposes I will support it.
+
+        rc = (
+            c.inner if isinstance(c, ConstraintDecorator) else c
+            for c in self.constraints
+        )  # map
+        anbc: List[AnalysisBasedConstraint] = cast(
+            List[AnalysisBasedConstraint],
+            list(filter(lambda c: isinstance(c, AnalysisBasedConstraint), rc)),
+        )  # collect
+
+        analyzers = {c.analyzer for c in anbc}  # map
+
+        return analyzers
 
     # Original implementation is CheckWithLastConstrintFilterable
     # Where the last constraint has a filter that is pressumably applied to everything
@@ -88,6 +107,9 @@ class Check:
             lambda filter_: min_constraint(column, assertion, filter_, hint)
         )
 
+    def evaluate(self, context):
+        pass
+
 
 # FIXME: Move somewhere else?
 class CheckWithLastConstraintFilterable(Check):
@@ -95,7 +117,7 @@ class CheckWithLastConstraintFilterable(Check):
         self,
         level: CheckLevel,
         description: str,
-        constraints: List[Constraint],
+        constraints: Tuple[Constraint, ...],
         create_replacement: Callable[[Optional[str]], Constraint],
     ):
         super().__init__(level, description, constraints)
@@ -115,7 +137,7 @@ class CheckWithLastConstraintFilterable(Check):
         A filtered Check
 
         """
-        adjusted_constraints = self.constraints[:-1] + [self.create_replacement(query)]
+        adjusted_constraints = self.constraints[:-1] + (self.create_replacement(query),)
         return Check(self.level, self.description, adjusted_constraints)
 
     @classmethod
@@ -123,7 +145,7 @@ class CheckWithLastConstraintFilterable(Check):
         cls,
         level: CheckLevel,
         description: str,
-        constraints: List[Constraint],
+        constraints: Tuple[Constraint, ...],
         create_replacement: Callable[[Optional[str]], Constraint],
     ) -> "CheckWithLastConstraintFilterable":
 

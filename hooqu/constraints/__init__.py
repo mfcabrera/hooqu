@@ -4,5 +4,9 @@ from hooqu.constraints.constraints import min_constraint  # noqa: F401
 from hooqu.constraints.constraint import (  # noqa: F401
     ConstraintResult,
     ConstraintStatus,
-    Constraint
+    Constraint,
+    ConstraintDecorator
 )
+
+
+from hooqu.constraints.analysis_based_constraint import AnalysisBasedConstraint  # noqa: F401

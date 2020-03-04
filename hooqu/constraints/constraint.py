@@ -50,7 +50,7 @@ class ConstraintDecorator(Constraint):
         return replace(self._inner.evaluate(analysis_result), constraint=self)
 
 
-@dataclass
+@dataclass(eq=True)
 class NamedConstraint(ConstraintDecorator):
     constraint: Constraint
     name: str
@@ -62,3 +62,8 @@ class NamedConstraint(ConstraintDecorator):
 
     def __str__(self):
         return self.name
+
+    def __hash__(self,):
+        return (
+            hash(self.constraint) ^ hash(self.name)
+        )
