@@ -50,7 +50,7 @@ class Analyzer(ABC):
         pass
 
     @abstractmethod
-    def _to_failure_metric(self, ex: Exception) -> Metric:
+    def to_failure_metric(self, ex: Exception) -> Metric:
         pass
 
     def preconditions(self) -> List[Callable[[DataFrame], None]]:
@@ -84,7 +84,7 @@ class Analyzer(ABC):
             for precond in self.preconditions():
                 precond(data)
         except (ValueError, KeyError) as ex:
-            return self._to_failure_metric(ex)
+            return self.to_failure_metric(ex)
 
         # TODO: deal with aggregate_with
         # TODO: deal save_states_with
@@ -92,7 +92,7 @@ class Analyzer(ABC):
         try:
             state = self.compute_state_from(data)
         except Exception as e:
-            return self._to_failure_metric(e)
+            return self.to_failure_metric(e)
 
         return self.calculate_metric(state, aggregate_with, save_states_with)
 
@@ -138,15 +138,15 @@ class ScanShareableAnalyzer(Analyzer, Generic[S]):
         pass
 
     @abstractmethod
-    def _from_aggregation_result(self, result, offset) -> Optional[S]:
+    def from_aggregation_result(self, result, offset) -> Optional[S]:
         """ Defines the aggregations to compute on the data """
         pass
 
-    def _metric_from_aggregation_result(
+    def metric_from_aggregation_result(
         self, result: DataFrame, offset: int, aggregate_with=None, save_states_with=None
     ):
 
-        state = self._from_aggregation_result(result, offset)
+        state = self.from_aggregation_result(result, offset)
         return self.calculate_metric(state, aggregate_with, save_states_with)
 
 
@@ -156,11 +156,11 @@ class StandardScanShareableAnalyzer(ScanShareableAnalyzer, Generic[S]):
         pass
 
     # TODO: Maybe result should be a series
-    def _metric_from_aggregation_result(
+    def metric_from_aggregation_result(
         self, result: DataFrame, offset: int, aggregate_with=None, save_states_with=None
     ):
 
-        state = self._from_aggregation_result(result, offset)
+        state = self.from_aggregation_result(result, offset)
         return self.calculate_metric(state, aggregate_with, save_states_with)
 
     def compute_metric_from(self, state=None) -> DoubleMetric:
@@ -182,9 +182,9 @@ class StandardScanShareableAnalyzer(ScanShareableAnalyzer, Generic[S]):
 
         result = data.agg(aggregations)
         # Now make sense of the results
-        return self._from_aggregation_result(result, 0)
+        return self.from_aggregation_result(result, 0)
 
-    def _to_failure_metric(self, ex: Exception) -> DoubleMetric:
+    def to_failure_metric(self, ex: Exception) -> DoubleMetric:
         return metric_from_failure(ex, self.name, self.instance, self.entity)
 
     def preconditions(self) -> List[Callable[[DataFrame], None]]:
