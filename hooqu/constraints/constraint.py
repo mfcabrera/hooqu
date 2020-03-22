@@ -9,8 +9,8 @@ from hooqu.metrics import Metric
 
 
 class ConstraintStatus(Enum):
-    FAILURE = 0
-    SUCESS = 1
+    SUCESS = 0
+    FAILURE = 1
 
 
 class Constraint(ABC):

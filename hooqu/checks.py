@@ -118,9 +118,9 @@ class Check:
 
         check_status = CheckStatus.SUCESS
 
-        if any_failures and self.level == CheckStatus.ERROR:
+        if any_failures and self.level == CheckLevel.ERROR:
             check_status = CheckStatus.ERROR
-        elif any_failures and self.level == CheckStatus.WARNING:
+        elif any_failures and self.level == CheckLevel.WARNING:
             check_status = CheckStatus.WARNING
 
         return CheckResult(self, check_status, constraint_results)
