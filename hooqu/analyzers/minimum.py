@@ -23,10 +23,10 @@ class Minimum(StandardScanShareableAnalyzer[MinState]):
     def __init__(self, column: str, where: Optional[str] = None):
         super().__init__("Minimum", column, where=where)
 
-    def _from_aggregation_result(
+    def from_aggregation_result(
         self, result: DataFrame, offset: int = 0
     ) -> Optional[MinState]:
-        value = result.iloc[offset].values[0]
+        value = result[self.instance].iloc[offset]
         return MinState(value)
 
     def _aggregation_functions(self, where: Optional[str] = None) -> Sequence[str]:
@@ -34,7 +34,7 @@ class Minimum(StandardScanShareableAnalyzer[MinState]):
         # TODO: Habdle the ConditionalCount for a dataframe
         # in the original implementation  here a Spark.Column is returned
         # with using the "SUM (exp(where)) As LONG INT"
-        # with Pandas-like dataqqqqframe the where clqqqause need to be evaluated
+        # with Pandas-like dataframe the where clause need to be evaluated
         # before as the API does not get translated into SQL as with spark
         return ("min",)
 

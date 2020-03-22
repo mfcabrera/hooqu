@@ -26,9 +26,12 @@ class Size(StandardScanShareableAnalyzer):
 
         super().__init__("Size", "*", Entity.DATASET, where)
 
-    def _from_aggregation_result(
+    def from_aggregation_result(
         self, result: DataFrame, offset: int = 0
     ) -> Optional[NumMatches]:
+        # FIXME: Pandas work by counting non-null values
+        # on each columns, probably this is not what we want here
+        # leaving it like this for now.
         value = int(result.iloc[offset].values[0])
         return NumMatches(value)
 
