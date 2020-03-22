@@ -3,6 +3,8 @@ from enum import Enum
 from typing import Any, Callable, List, Optional, Set, cast, Sequence, Tuple
 
 from hooqu.analyzers import Analyzer
+from hooqu.analyzers.runners import AnalyzerContext
+from hooqu.constraints.constraint import ConstraintStatus
 
 from hooqu.constraints import (
     Constraint,
@@ -70,9 +72,7 @@ class Check:
 
         return analyzers
 
-    # Original implementation is CheckWithLastConstrintFilterable
-    # Where the last constraint has a filter that is pressumably applied to everything
-    # but for now let's return a simple constraint
+    # I am implementing CheckWithLastConstraintFilterable but not sure if it is necessary
     # Because having a Spark SQL predicate does not make a lot of sense
     # for pandas-like dataframe
     # however it might make sense later on
@@ -107,8 +107,23 @@ class Check:
             lambda filter_: min_constraint(column, assertion, filter_, hint)
         )
 
-    def evaluate(self, context):
-        pass
+    def evaluate(self, context: AnalyzerContext):
+        #  Evaluate all the constraints
+        constraint_results = [
+            c.evaluate(context.metric_map) for c in self.constraints
+        ]
+        any_failures: bool = any(
+            (c.status == ConstraintStatus.FAILURE for c in constraint_results)
+        )
+
+        check_status = CheckStatus.SUCESS
+
+        if any_failures and self.level == CheckStatus.ERROR:
+            check_status = CheckStatus.ERROR
+        elif any_failures and self.level == CheckStatus.WARNING:
+            check_status = CheckStatus.WARNING
+
+        return CheckResult(self, check_status, constraint_results)
 
 
 # FIXME: Move somewhere else?
@@ -137,6 +152,7 @@ class CheckWithLastConstraintFilterable(Check):
         A filtered Check
 
         """
+        # FIXME: NOT WORKING
         adjusted_constraints = self.constraints[:-1] + (self.create_replacement(query),)
         return Check(self.level, self.description, adjusted_constraints)
 
