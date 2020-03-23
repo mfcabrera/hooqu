@@ -9,7 +9,7 @@ from hooqu.metrics import Metric
 
 
 class ConstraintStatus(Enum):
-    SUCESS = 0
+    SUCCESS = 0
     FAILURE = 1
 
 
@@ -67,3 +67,6 @@ class NamedConstraint(ConstraintDecorator):
         return (
             hash(self.constraint) ^ hash(self.name)
         )
+
+    def __repr__(self):
+        return self.name

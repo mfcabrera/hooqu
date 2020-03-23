@@ -125,6 +125,9 @@ class Analyzer(ABC):
             hash(self.name) ^ hash(self.instance) ^ hash(self.entity) ^ hash(self.where)
         )
 
+    def __repr__(self, ):
+        return f"{self.name}({self.instance})"
+
 
 class ScanShareableAnalyzer(Analyzer, Generic[S]):
     """An analyzer that runs a set of aggregation functions over the data,

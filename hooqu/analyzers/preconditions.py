@@ -11,7 +11,6 @@ def find_first_failing(
         conditions: Sequence[Callable[[DataFrame], None]]
 ) -> Optional[Exception]:
 
-    print(conditions)
     for cond in conditions:
         try:
             cond(data)

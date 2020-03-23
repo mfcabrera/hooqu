@@ -69,7 +69,7 @@ class AnalysisBasedConstraint(Constraint):
                 # run assertion
                 assertion_ok = self._run_assertion(assert_on)
                 if assertion_ok:
-                    return ConstraintResult(self, ConstraintStatus.SUCESS)
+                    return ConstraintResult(self, ConstraintStatus.SUCCESS)
                 else:
                     msg = (
                         f"Value {assert_on} does not meet the constraint requirement. "

@@ -22,7 +22,7 @@ class CheckLevel(Enum):
 
 
 class CheckStatus(Enum):
-    SUCESS = 0
+    SUCCESS = 0
     WARNING = 1
     ERROR = 2
 
@@ -116,7 +116,7 @@ class Check:
             (c.status == ConstraintStatus.FAILURE for c in constraint_results)
         )
 
-        check_status = CheckStatus.SUCESS
+        check_status = CheckStatus.SUCCESS
 
         if any_failures and self.level == CheckLevel.ERROR:
             check_status = CheckStatus.ERROR

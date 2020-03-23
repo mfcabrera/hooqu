@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class VerificationResult:
     status: CheckStatus
-    checkResults: Mapping[Check, CheckResult]
+    check_results: Mapping[Check, CheckResult]
     metrics: Mapping[Analyzer, Metric]
 
 
@@ -123,10 +123,10 @@ class VerificationSuite:
 
         check_results = {c: c.evaluate(analysis_context) for c in checks}
 
-        if check_results:
+        if not check_results:
             verification_status = CheckStatus.SUCESS
         else:
-            verification_status = max(cr for cr in check_results.values())
+            verification_status = max(cr.status for cr in check_results.values())
 
         return VerificationResult(
             verification_status, check_results, analysis_context.metric_map
