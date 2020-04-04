@@ -3,7 +3,7 @@
 import logging
 from dataclasses import dataclass
 from itertools import accumulate
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple, Set
 
 from more_itertools import flatten, partition
 
@@ -27,22 +27,15 @@ class VerificationResult:
 class VerificationRunBuilder:
     def __init__(self, data):
         self.data = data
-        self._checks : List[Check] = []
-        self._required_analyzers : Optional[Tuple[Analyzer, ...]] = None
-
+        self._checks: List[Check] = []
+        self._required_analyzers: Optional[Tuple[Analyzer, ...]] = None
 
     # FIXME: This does not make a lot of sense now
     # but let's keep it like this for API compatability
     def run(self) -> VerificationResult:
 
         return VerificationSuite().do_verifiation_run(
-            self.data,
-            self._checks,
-            self._required_analyzers,
-            None,
-            None,
-            None,
-            None,
+            self.data, self._checks, self._required_analyzers, None, None, None, None,
         )
 
     def add_check(self, check: Check) -> "VerificationRunBuilder":
@@ -184,13 +177,11 @@ def analysis_runner_do_analysis_run(
             analyzers_to_run,
         )
     )
-    # TODO: deal with analyzers whose preconditions fail
-    failed_analyzers = set(analyzers_to_run) - set(passed_analyzers)
 
-    # print(failed_analyzers)
-    # /* Create the failure metrics from the precondition violations */
-    # val preconditionFailures =
-    # computePreconditionFailureMetrics(failedAnalyzers, data.schema)
+    # Create the failure metrics from the precondition violations
+
+    failed_analyzers = set(analyzers_to_run) - set(passed_analyzers)
+    precondition_failures = compute_precondition_failure_metrics(failed_analyzers, data)
 
     # TODO: Deal with gruping analyzers (for now not necessary)
     # TODO: Deeque implement also KLL Sketches and what not for now not implmented here
@@ -203,7 +194,21 @@ def analysis_runner_do_analysis_run(
     # grouped_metrics = blah blah and then join with others
     # so we have a resulting analyzer context
 
-    return non_grouped_metrics
+    return non_grouped_metrics + precondition_failures
+
+
+def compute_precondition_failure_metrics(
+    failed_analyzers: Set[Analyzer], data
+) -> AnalyzerContext:
+    def first_exception_to_failure_metric(analyzer):
+        first_exception = find_first_failing(data, analyzer.preconditions())
+        if not first_exception:
+            raise AssertionError("At least one exception should be found in a failing")
+
+        return analyzer.to_failure_metric(first_exception)
+
+    failures = {a: first_exception_to_failure_metric(a) for a in failed_analyzers}
+    return AnalyzerContext(failures)
 
 
 # Implemented in AnalysisRunner
