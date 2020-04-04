@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from tryingsnake import Success, Failure
 
-from hooqu.generic import DataFrame
+from hooqu.dataframe import DataFrame
 from hooqu.metrics import Metric, Entity, DoubleMetric
 
 

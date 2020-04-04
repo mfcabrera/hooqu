@@ -4,7 +4,7 @@ from typing import Callable, List, Optional, Sequence
 from hooqu.analyzers.analyzer import (DoubledValuedState,
                                       StandardScanShareableAnalyzer)
 from hooqu.analyzers.preconditions import has_column, is_numeric
-from hooqu.generic import DataFrame
+from hooqu.dataframe import DataFrame
 
 
 @dataclass

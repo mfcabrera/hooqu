@@ -6,7 +6,7 @@ from hooqu.analyzers.analyzer import (
     StandardScanShareableAnalyzer,
     Entity,
 )
-from hooqu.generic import DataFrame
+from hooqu.dataframe import DataFrame
 
 
 @dataclass

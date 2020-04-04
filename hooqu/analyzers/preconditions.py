@@ -1,8 +1,8 @@
 """Preconditions are tested before the analysis is run"""
 
 from typing import Callable, Sequence, Optional
-from pandas import DataFrame
-from hooqu.generic import generic_is_numeric
+from hooqu.dataframe import DataFrame
+from hooqu.dataframe import generic_is_numeric
 
 
 def find_first_failing(
