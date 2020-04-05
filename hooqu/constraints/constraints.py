@@ -29,4 +29,4 @@ def min_constraint(
     minimum = Minimum(column, where)
     constraint = AnalysisBasedConstraint(minimum, assertion, hint)
 
-    return NamedConstraint(constraint, f"MinimumConstraint(f{minimum})")
+    return NamedConstraint(constraint, f"MinimumConstraint({minimum})")

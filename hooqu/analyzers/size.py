@@ -31,8 +31,11 @@ class Size(StandardScanShareableAnalyzer):
     ) -> Optional[NumMatches]:
         # FIXME: Pandas work by counting non-null values
         # on each columns, probably this is not what we want here
-        # leaving it like this for now.
-        value = int(result.iloc[offset].values[0])
+        # selecting the maximum count of the column
+        # so if all column contain only nan values then the count
+        # will be 0
+
+        value = int(max(result.iloc[offset].values))
         return NumMatches(value)
 
     def _aggregation_functions(self, where: Optional[str] = None) -> Sequence[str]:

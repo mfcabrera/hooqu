@@ -142,7 +142,6 @@ class ScanShareableAnalyzer(Analyzer, Generic[S]):
 
     @abstractmethod
     def from_aggregation_result(self, result, offset) -> Optional[S]:
-        """ Defines the aggregations to compute on the data """
         pass
 
     def metric_from_aggregation_result(

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Generic, Sequence, TypeVar
+from typing import Generic, Sequence, TypeVar
 
 from tryingsnake import Try_
 
@@ -21,12 +21,10 @@ class Metric(Generic[M]):
     name: str
     value: Try_
 
-    # FIXME: Proper work
-    def flatten(self) -> Sequence[Any]:
+    def flatten(self) -> Sequence["Metric[M]"]:
         pass
 
 
-# @dataclass(frozen=True)
 class DoubleMetric(Metric[float]):
     def flatten(self) -> Sequence[Metric[float]]:
         return (self,)
