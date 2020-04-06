@@ -5,9 +5,9 @@ Hooqu - Unit Tests for Data
 Jukumari (pronounced hooqumari) is the Aymara name for the spectacled bear, also known as the Andean
 bear, Andean short-faced bear, or mountain bear. Other names include ukumari or ukuku.
 
-Hooqu is a library built on top of Pandas-like dataframes for defining "unit tests for data", which measure data quality datasets. Hooque is an "espiritual" Python port of `Apache Deequ <https://github.com/awslabs/deequ/>`_
-I am happy to receive feedback and contributions.
+Hooqu is a library built on top of Pandas-like dataframes for defining "unit tests for data", which measure data quality datasets. Hooqu is an "espiritual" Python port of `Apache Deequ <https://github.com/awslabs/deequ/>`_
 
+I am happy to receive feedback and contributions.
 .. image:: https://img.shields.io/pypi/v/hooqu.svg
         :target: https://pypi.python.org/pypi/hooqu
 
