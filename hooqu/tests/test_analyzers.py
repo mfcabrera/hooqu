@@ -2,8 +2,7 @@ import numpy as np
 from hypothesis import given
 from tryingsnake import Failure, Success
 
-from hooqu.analyzers.minimum import Minimum
-from hooqu.analyzers.size import Size
+from hooqu.analyzers import Minimum, Size
 from hooqu.metrics import DoubleMetric, Entity
 from hooqu.testing import df
 
@@ -24,10 +23,8 @@ class TestBasicStatisticsAnalyzers:
         a = Minimum(col)
         metric = a.calculate(data)
 
-        # Using numpy assert equal because it handles nan values
-        # well.
-        # in the case of an empty dataframe this value value
-        # is np.nan
+        # Using numpy assert equal because it handles nan values  well.
+        # in the case of an empty dataframe this value value np.nan
 
         assert isinstance(metric.value, Success)
         np.testing.assert_equal(metric.value.get(), data[col].min())
