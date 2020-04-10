@@ -12,7 +12,7 @@ class TestSizeAnalyzer:
     def test_compute_correct_metrics(self, data):
         a = Size()
         metric = a.calculate(data)
-        assert metric == DoubleMetric(Entity.DATASET, "Size", "*", Success(len(data)))
+        assert metric == DoubleMetric(Entity.DATASET, "*", "Size", Success(len(data)))
 
 
 class TestBasicStatisticsAnalyzers:
