@@ -196,13 +196,13 @@ class StandardScanShareableAnalyzer(ScanShareableAnalyzer, Generic[S]):
 def metric_from_value(
     value: float, name: str, instance: str, entity: Entity
 ) -> DoubleMetric:
-    return DoubleMetric(entity, name, instance, Success(value))
+    return DoubleMetric(entity, instance, name, Success(value))
 
 
 def metric_from_failure(
     ex: Exception, name: str, instance: str, entity: Entity
 ) -> DoubleMetric:
-    return DoubleMetric(entity, name, instance, Failure(ex))
+    return DoubleMetric(entity, instance, name, Failure(ex))
 
 
 def metric_from_empty(
