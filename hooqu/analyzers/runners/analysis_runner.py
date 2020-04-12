@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from itertools import accumulate
 from typing import Dict, List, Mapping, Optional, Sequence, Set
 
+import pandas as pd
 from more_itertools import flatten, partition
 
 from hooqu.analyzers import Analyzer, ScanShareableAnalyzer
@@ -21,6 +22,37 @@ class AnalyzerContext:
 
     def metric(self, analyzer: Analyzer) -> Optional[Metric]:
         return self.metric_map.get(analyzer, None)
+
+    @classmethod
+    def success_metrics_as_dataframe(
+        cls,
+        analyzer_context: "AnalyzerContext",
+        for_analyzers: Sequence[Analyzer] = None,
+    ) -> pd.DataFrame:
+
+        if not for_analyzers:
+            for_analyzers = []
+
+        mp = analyzer_context.metric_map
+
+        # originally implemented in getSimplifiedOutputForSelectedAnalyzers
+
+        # Get the analyzers are required that were sucessful
+        mp = {
+            k: mp[k]
+            for k in mp
+            if (
+                (not len(for_analyzers) or k in for_analyzers) and mp[k].value.isSuccess
+            )
+        }
+
+        # Get metrics as Double and replace simple name with description
+        renamed: List[Metric] = []
+        for a in mp:
+            # TODO: rename metric
+            renamed.extend(map(lambda x: x, mp[a].flatten()))
+
+        return pd.DataFrame(metric.asdict() for metric in renamed)
 
 
 def do_analysis_run(

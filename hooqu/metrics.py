@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Generic, Sequence, TypeVar
+from typing import Generic, Sequence, TypeVar, Mapping, Optional, Union
 
 from tryingsnake import Try_
 
@@ -23,6 +23,15 @@ class Metric(Generic[M]):
 
     def flatten(self) -> Sequence["Metric[M]"]:
         pass
+
+    # This would replace simplifiedMetricOutput
+    def asdict(self) -> Mapping[str, Union[str, Optional[float]]]:
+        return {
+            "entity": str(self.entity).split(".")[-1],
+            "instance": self.instance,
+            "name": self.name,
+            "value": self.value.getOrElse(None)
+        }
 
 
 class DoubleMetric(Metric[float]):
