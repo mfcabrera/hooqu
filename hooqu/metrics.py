@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Generic, Sequence, TypeVar, Mapping, Optional, Union
+from typing import Generic, Mapping, Optional, Sequence, TypeVar, Union
 
 from tryingsnake import Try_
 
@@ -17,8 +17,8 @@ M = TypeVar("M")
 @dataclass(frozen=True)
 class Metric(Generic[M]):
     entity: Entity
-    instance: str
     name: str
+    instance: str
     value: Try_
 
     def flatten(self) -> Sequence["Metric[M]"]:
@@ -30,7 +30,7 @@ class Metric(Generic[M]):
             "entity": str(self.entity).split(".")[-1],
             "instance": self.instance,
             "name": self.name,
-            "value": self.value.getOrElse(None)
+            "value": self.value.getOrElse(None),
         }
 
 

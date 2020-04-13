@@ -2,10 +2,9 @@
 
 from typing import Callable, List, Optional, Sequence
 
-from hooqu.analyzers.analyzer import (NumMatchesAndCount,
-                                      StandardScanShareableAnalyzer)
+from hooqu.analyzers.analyzer import NumMatchesAndCount, StandardScanShareableAnalyzer
 from hooqu.analyzers.preconditions import has_column
-from hooqu.dataframe import DataFrame, count_not_null, count_all
+from hooqu.dataframe import DataFrame, count_all, count_not_null
 
 
 class Completeness(StandardScanShareableAnalyzer[NumMatchesAndCount]):
