@@ -26,7 +26,10 @@ class Minimum(StandardScanShareableAnalyzer[MinState]):
     def from_aggregation_result(
         self, result: DataFrame, offset: int = 0
     ) -> Optional[MinState]:
-        value = result[self.instance].iloc[offset]
+        value = 0
+        if len(result):  # otherwise an emptyu dataframe
+            value = result.iloc[offset][self.instance]
+
         return MinState(value)
 
     def _aggregation_functions(self, where: Optional[str] = None) -> Sequence[str]:

@@ -1,12 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar, Sequence, Optional, Callable, List
 from dataclasses import dataclass
+from typing import Callable, Generic, List, Optional, Sequence, TypeVar, Union
 
-from tryingsnake import Success, Failure
+from tryingsnake import Failure, Success
 
 from hooqu.dataframe import DataFrame
-from hooqu.metrics import Metric, Entity, DoubleMetric
-
+from hooqu.metrics import DoubleMetric, Entity, Metric
 
 S = TypeVar("S")
 
@@ -125,7 +124,7 @@ class Analyzer(ABC):
             hash(self.name) ^ hash(self.instance) ^ hash(self.entity) ^ hash(self.where)
         )
 
-    def __repr__(self, ):
+    def __repr__(self,):
         return f"{self.name}({self.instance})"
 
 
@@ -134,7 +133,7 @@ class ScanShareableAnalyzer(Analyzer, Generic[S]):
     can share scans over the data """
 
     @abstractmethod
-    def _aggregation_functions(self,) -> Sequence[str]:
+    def _aggregation_functions(self,) -> Union[Sequence[str], str]:
         """
         Defines the aggregations to compute on the data
         """
@@ -196,22 +195,41 @@ class StandardScanShareableAnalyzer(ScanShareableAnalyzer, Generic[S]):
 def metric_from_value(
     value: float, name: str, instance: str, entity: Entity
 ) -> DoubleMetric:
-    return DoubleMetric(entity, instance, name, Success(value))
+    return DoubleMetric(entity, name, instance, Success(value))
 
 
 def metric_from_failure(
     ex: Exception, name: str, instance: str, entity: Entity
 ) -> DoubleMetric:
-    return DoubleMetric(entity, instance, name, Failure(ex))
+    return DoubleMetric(entity, name, instance, Failure(ex))
 
 
 def metric_from_empty(
-        analyzer: Analyzer,
-        name: str,
-        instance: str,
-        entity: Entity = Entity.COLUMN
+    analyzer: Analyzer, name: str, instance: str, entity: Entity = Entity.COLUMN
 ):
     e = EmptyStateException(
         "Empty state for analyzer {analyzer}, all input values were None."
     )
     return metric_from_failure(e, name, instance, entity)
+
+
+@dataclass(frozen=True)
+class NumMatchesAndCount(DoubledValuedState["NumMatchesAndCount"]):
+    """
+    A state for computing ratio-based metrics,
+    contains #rows that match a predicate and overall #rows
+    """
+
+    num_matches: int
+    count: int
+
+    def sum(self, other: "NumMatchesAndCount") -> "NumMatchesAndCount":
+        return NumMatchesAndCount(
+            self.num_matches + other.num_matches, self.count + other.count
+        )
+
+    def metric_value(self) -> float:
+        if self.count == 0:
+            return float("nan")
+
+        return self.num_matches / self.count

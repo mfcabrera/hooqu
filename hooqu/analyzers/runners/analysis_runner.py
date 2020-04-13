@@ -147,6 +147,7 @@ def run_scanning_analyzers(
     others, shareable = partition(
         lambda a: isinstance(a, ScanShareableAnalyzer), analyzers
     )
+
     shareable = list(shareable)
 
     aggregations = []
