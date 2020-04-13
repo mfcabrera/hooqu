@@ -23,36 +23,44 @@ I am happy to receive feedback and contributions.
 .. image:: https://pyup.io/repos/github/mfcabrera/hooqu/shield.svg
      :target: https://pyup.io/repos/github/mfcabrera/hooqu/
      :alt: Updates
- 
+
+Sample code working so far:
 
 .. code-block:: python
 
     import pandas as pd
-   
-    from hooqu.verification_suite import VerificationSuite
+
     from hooqu.checks import Check, CheckLevel, CheckStatus
-    
-    df = pd.util.testing.makeDataFrame() # Dataframe size = 30
-   
-    verification_result = (VerificationSuite()
-    .on_data(df)
-    .add_check(
-        Check(_
-            CheckLevel.ERROR,  
-            "Basic Check"
-        )
-       .has_size(lambda x: x > 10)
-       .has_min("A", lambda min_: min_ > -99)
-       .has_min("X", lambda min_: min_ < -9999)
-       ).run()
-    )   
+    from hooqu.constraints import ConstraintStatus
+    from hooqu.verification_suite import VerificationSuite
+
+    df = pd.util.testing.makeDataFrame()  # Dataframe size = 30
+
+   verification_result = (
+       VerificationSuite()
+       .on_data(df)
+       .add_check(
+            Check(CheckLevel.ERROR, "Basic Check")
+            .has_size(lambda x: x > 100)  # DataFrame should have more than 100 rows
+            .has_min("A", lambda min_: min_ > -99)  # min(A) should be larger than -99
+            .is_complete("B")  # should never be null
+       )
+      .run()
+  )
+
 
     if verification_result.status == CheckStatus.SUCCESS:
         print("Alles klar: The data passed the test, everything is fine!")
     else:
         print("We found errors in the data")
 
-     
+
+    for check_result in verification_result.check_results.values():
+        for cr in check_result.constraint_results:
+            if cr.status != ConstraintStatus.SUCCESS:
+                print(f"{cr.constraint}: {cr.message}")
+
+
 
 
 * Free software: Apache Software License 2.0
