@@ -1,19 +1,22 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, List, Optional, Set, cast, Sequence, Tuple
+from typing import Any, Callable, List, Optional, Sequence, Set, Tuple, cast
 
 from hooqu.analyzers import Analyzer
 from hooqu.analyzers.runners import AnalyzerContext
-from hooqu.constraints.constraint import ConstraintStatus
-
 from hooqu.constraints import (
+    AnalysisBasedConstraint,
     Constraint,
     ConstraintDecorator,
     ConstraintResult,
-    AnalysisBasedConstraint,
+    completeness_constraint,
     min_constraint,
     size_constraint,
 )
+from hooqu.constraints.constraint import ConstraintStatus
+
+
+IS_ONE = lambda x: x == 1
 
 
 class CheckLevel(Enum):
@@ -107,11 +110,16 @@ class Check:
             lambda filter_: min_constraint(column, assertion, filter_, hint)
         )
 
+    def is_complete(
+        self, column: str, hint: Optional[str] = None,
+    ):
+        return self.add_filterable_constraint(
+            lambda filter_: completeness_constraint(column, IS_ONE, filter_, hint)
+        )
+
     def evaluate(self, context: AnalyzerContext):
         #  Evaluate all the constraints
-        constraint_results = [
-            c.evaluate(context.metric_map) for c in self.constraints
-        ]
+        constraint_results = [c.evaluate(context.metric_map) for c in self.constraints]
         any_failures: bool = any(
             (c.status == ConstraintStatus.FAILURE for c in constraint_results)
         )
