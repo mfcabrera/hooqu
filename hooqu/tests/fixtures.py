@@ -32,12 +32,17 @@ def df_missing():
 def df_full():
 
     return pd.DataFrame(
-        [(1, "a", "c"), (2, "a", "c"), (3, "a", "c"), (4, "b", "d")],
+        [  # fmt: off
+            (1, "a", "c"),  # fmt: off
+            (2, "a", "c"),
+            (3, "a", "c"),
+            (4, "b", "d"),
+        ],
         columns=["item", "att1", "att2"],
-    )
+    )  # fmt: off
 
 
-def df(allow_nan=True, allow_infinity=True):
+def df_strategy(allow_nan=True, allow_infinity=True):
     """
     This strategies generates dataframes that might containing
     a column without null/inf and a column with inf and possible nan
@@ -58,6 +63,6 @@ def df(allow_nan=True, allow_infinity=True):
     )
 
 
-def df_complete():
+def df_complete_strategy():
     """ This generates df without null or inf values """
-    return df(False, False)
+    return df_strategy(False, False)

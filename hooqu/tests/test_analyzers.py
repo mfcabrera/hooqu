@@ -4,11 +4,11 @@ from tryingsnake import Failure, Success
 
 from hooqu.analyzers import Minimum, Size, Completeness
 from hooqu.metrics import DoubleMetric, Entity
-from hooqu.testing import df
+from hooqu.tests.fixtures import df_strategy
 
 
 class TestSizeAnalyzer:
-    @given(df())
+    @given(df_strategy())
     def test_computes_correct_metrics(self, data):
         a = Size()
         metric = a.calculate(data)
@@ -16,7 +16,7 @@ class TestSizeAnalyzer:
 
 
 class TestBasicStatisticsAnalyzers:
-    @given(df())
+    @given(df_strategy())
     def test_correct_minimum_value_is_computed(self, data):
 
         col = data.columns[0]
@@ -29,7 +29,7 @@ class TestBasicStatisticsAnalyzers:
         assert isinstance(metric.value, Success)
         np.testing.assert_equal(metric.value.get(), data[col].min())
 
-    @given(df())
+    @given(df_strategy())
     def test_fail_to_compute_minimum_no_numeric(self, data):
 
         col = "att1"
