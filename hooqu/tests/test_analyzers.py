@@ -2,7 +2,7 @@ import numpy as np
 from hypothesis import given
 from tryingsnake import Failure, Success
 
-from hooqu.analyzers import Completeness, Maximum, Minimum, Size
+from hooqu.analyzers import Completeness, Maximum, Mean, Minimum, Size
 from hooqu.metrics import DoubleMetric, Entity
 from hooqu.tests.fixtures import df_strategy
 
@@ -17,7 +17,7 @@ class TestSizeAnalyzer:
 
 class TestBasicStatisticsAnalyzers:
     @given(df_strategy())
-    def test_correct_minimum_value_is_computed(self, data):
+    def test_computes_minimum_value_is_correctly(self, data):
 
         col = data.columns[0]
         a = Minimum(col)
@@ -37,7 +37,7 @@ class TestBasicStatisticsAnalyzers:
         val = a.calculate(data).value
         assert isinstance(val, Failure)
 
-    def test_correct_minimum_value_with_filtering_is_computed(
+    def test_computes_minimum_value_with_predicate_correctly(
         self, df_with_numeric_values
     ):
         data = df_with_numeric_values
@@ -48,7 +48,7 @@ class TestBasicStatisticsAnalyzers:
         assert value == Success(1.0)
 
     @given(df_strategy())
-    def test_correct_maximum_value_is_computed(self, data):
+    def test_computes_maximum_value_is_correctly(self, data):
         col = data.columns[0]
         a = Maximum(col)
         metric = a.calculate(data)
@@ -56,7 +56,7 @@ class TestBasicStatisticsAnalyzers:
         assert isinstance(metric.value, Success)
         np.testing.assert_equal(metric.value.get(), data[col].max())
 
-    def test_correct_maximum_value_with_filtering_is_computed(
+    def test_computes_max_value_with_predicate_correctly(
         self, df_with_numeric_values
     ):
         data = df_with_numeric_values
@@ -73,6 +73,30 @@ class TestBasicStatisticsAnalyzers:
         a = Maximum(col)
         val = a.calculate(data).value
         assert isinstance(val, Failure)
+
+    @given(df_strategy())
+    def test_computes_mean_correctly_for_numeric_data(self, data):
+        col = "att2"  # numeric here
+        a = Mean(col)
+        metric = a.calculate(data)
+        assert isinstance(metric.value, Success)
+        np.testing.assert_equal(metric.value.get(), data[col].mean())
+
+    @given(df_strategy())
+    def test_fail_to_compute_mean_no_numeric(self, data):
+
+        col = "att1"
+        a = Mean(col)
+        val = a.calculate(data).value
+        assert isinstance(val, Failure)
+
+    def test_computes_mean_value_with_predicate_correctly(self, df_with_numeric_values):
+        data = df_with_numeric_values
+        col = "att1"
+        a = Mean(col, where=f"item != '6'")
+        value = a.calculate(data).value
+
+        assert value == Success(3.0)
 
 
 class TestCompletenessAnalyzer:

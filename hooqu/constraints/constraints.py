@@ -1,7 +1,7 @@
 from typing import Callable, Optional
 
+from hooqu.analyzers import Completeness, Maximum, Mean, Minimum, Size
 from hooqu.constraints.analysis_based_constraint import AnalysisBasedConstraint
-from hooqu.analyzers import Minimum, Maximum, Size, Completeness
 from hooqu.constraints.constraint import Constraint, NamedConstraint
 
 
@@ -12,7 +12,6 @@ def size_constraint(
 ) -> Constraint:
 
     size = Size(where)
-
     constraint = AnalysisBasedConstraint(size, assertion, hint)
 
     return NamedConstraint(constraint, f"SizeConstraint({size})")
@@ -55,3 +54,16 @@ def completeness_constraint(
     constraint = AnalysisBasedConstraint(completeness, assertion, hint)
 
     return NamedConstraint(constraint, f"CompletenessConstraint({completeness})")
+
+
+def mean_constraint(
+    column: str,
+    assertion: Callable[[float], bool],
+    where: Optional[str] = None,
+    hint: Optional[str] = None,
+) -> Constraint:
+
+    mean = Mean(column, where)
+    constraint = AnalysisBasedConstraint(mean, assertion, hint)
+
+    return NamedConstraint(constraint, f"MeanConstraint({mean})")

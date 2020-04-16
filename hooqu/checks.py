@@ -11,6 +11,7 @@ from hooqu.constraints import (
     ConstraintResult,
     completeness_constraint,
     max_constraint,
+    mean_constraint,
     min_constraint,
     size_constraint,
 )
@@ -126,6 +127,17 @@ class Check:
     ):
         return self.add_filterable_constraint(
             lambda filter_: completeness_constraint(column, IS_ONE, filter_, hint)
+        )
+
+    def has_mean(
+        self,
+        column: str,
+        assertion: Callable[[float], bool],
+        hint: Optional[str] = None,
+    ) -> "CheckWithLastConstraintFilterable":
+
+        return self.add_filterable_constraint(
+            lambda filter_: mean_constraint(column, assertion, filter_, hint)
         )
 
     def evaluate(self, context: AnalyzerContext):

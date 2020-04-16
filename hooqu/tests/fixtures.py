@@ -69,12 +69,12 @@ def df_strategy(allow_nan=True, allow_infinity=True):
         columns=[
             column(name="item", dtype=float),
             column(name="att1", dtype="object"),
-            column(name="att2", dtype="object"),
+            column(name="att2", dtype=float),
         ],
         rows=st.tuples(
             st.floats(allow_nan=allow_nan, allow_infinity=allow_infinity),
             st.text(printable, max_size=5),
-            st.text(printable, max_size=5),
+            st.floats(allow_nan=allow_nan, allow_infinity=allow_infinity),
         ),
     )
 
