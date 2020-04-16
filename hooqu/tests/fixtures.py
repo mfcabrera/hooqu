@@ -42,6 +42,22 @@ def df_full():
     )  # fmt: off
 
 
+@pytest.fixture
+def df_with_numeric_values():
+    # att2 is always bigger than att1
+    return pd.DataFrame(
+        [
+            ("1", 1, 0, 0),
+            ("2", 2, 0, 0),
+            ("3", 3, 0, 0),
+            ("4", 4, 5, 4),
+            ("5", 5, 6, 6),
+            ("6", 6, 7, 7),
+        ],
+        columns=("item", "att1", "att2", "att3"),
+    )
+
+
 def df_strategy(allow_nan=True, allow_infinity=True):
     """
     This strategies generates dataframes that might containing

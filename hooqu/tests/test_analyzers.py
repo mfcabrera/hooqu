@@ -37,6 +37,16 @@ class TestBasicStatisticsAnalyzers:
         val = a.calculate(data).value
         assert isinstance(val, Failure)
 
+    def test_correct_minimum_value_with_filtering_is_computed(
+        self, df_with_numeric_values
+    ):
+        data = df_with_numeric_values
+        col = "att1"
+        a = Minimum(col, where=f"item != '6'")
+        value = a.calculate(data).value
+
+        assert value == Success(1.0)
+
     @given(df_strategy())
     def test_correct_maximum_value_is_computed(self, data):
         col = data.columns[0]
@@ -45,6 +55,16 @@ class TestBasicStatisticsAnalyzers:
 
         assert isinstance(metric.value, Success)
         np.testing.assert_equal(metric.value.get(), data[col].max())
+
+    def test_correct_maximum_value_with_filtering_is_computed(
+        self, df_with_numeric_values
+    ):
+        data = df_with_numeric_values
+        col = "att1"
+        a = Maximum(col, where=f"item != '6'")
+        value = a.calculate(data).value
+
+        assert value == Success(5.0)
 
     @given(df_strategy())
     def test_fail_to_compute_maximum_no_numeric(self, data):
