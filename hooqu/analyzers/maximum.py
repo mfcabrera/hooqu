@@ -13,7 +13,7 @@ class MaxState(DoubledValuedState):
     max_value: float
 
     def sum(self, other: "MaxState"):
-        return min(self.max_value, other.max_value)
+        return max(self.max_value, other.max_value)
 
     def metric_value(self):
         return self.max_value
@@ -21,7 +21,7 @@ class MaxState(DoubledValuedState):
 
 class Maximum(StandardScanShareableAnalyzer[MaxState]):
     def __init__(self, column: str, where: Optional[str] = None):
-        super().__init__("Minimum", column, where=where)
+        super().__init__("Maximum", column, where=where)
 
     def from_aggregation_result(
         self, result: DataFrame, offset: int = 0
