@@ -10,11 +10,11 @@ from hooqu.constraints import (
     ConstraintDecorator,
     ConstraintResult,
     completeness_constraint,
+    max_constraint,
     min_constraint,
     size_constraint,
 )
 from hooqu.constraints.constraint import ConstraintStatus
-
 
 IS_ONE = lambda x: x == 1
 
@@ -108,6 +108,17 @@ class Check:
 
         return self.add_filterable_constraint(
             lambda filter_: min_constraint(column, assertion, filter_, hint)
+        )
+
+    def has_max(
+        self,
+        column: str,
+        assertion: Callable[[float], bool],
+        hint: Optional[str] = None,
+    ) -> "CheckWithLastConstraintFilterable":
+
+        return self.add_filterable_constraint(
+            lambda filter_: max_constraint(column, assertion, filter_, hint)
         )
 
     def is_complete(
