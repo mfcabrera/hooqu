@@ -12,7 +12,7 @@ class MinState(DoubledValuedState):
 
     min_value: float
 
-    def sum(self, other):
+    def sum(self, other: "MinState"):
         return min(self.min_value, other.min_value)
 
     def metric_value(self):

@@ -10,13 +10,13 @@ from hooqu.dataframe import DataFrame
 @dataclass
 class MaxState(DoubledValuedState):
 
-    min_value: float
+    max_value: float
 
-    def sum(self, other):
-        return min(self.min_value, other.min_value)
+    def sum(self, other: "MaxState"):
+        return min(self.max_value, other.max_value)
 
     def metric_value(self):
-        return self.min_value
+        return self.max_value
 
 
 class Maximum(StandardScanShareableAnalyzer[MaxState]):
