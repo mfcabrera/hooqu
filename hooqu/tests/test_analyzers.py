@@ -2,7 +2,7 @@ import numpy as np
 from hypothesis import given
 from tryingsnake import Failure, Success
 
-from hooqu.analyzers import Minimum, Size, Completeness
+from hooqu.analyzers import Completeness, Maximum, Minimum, Size
 from hooqu.metrics import DoubleMetric, Entity
 from hooqu.tests.fixtures import df_strategy
 
@@ -34,6 +34,23 @@ class TestBasicStatisticsAnalyzers:
 
         col = "att1"
         a = Minimum(col)
+        val = a.calculate(data).value
+        assert isinstance(val, Failure)
+
+    @given(df_strategy())
+    def test_correct_maximum_value_is_computed(self, data):
+        col = data.columns[0]
+        a = Maximum(col)
+        metric = a.calculate(data)
+
+        assert isinstance(metric.value, Success)
+        np.testing.assert_equal(metric.value.get(), data[col].max())
+
+    @given(df_strategy())
+    def test_fail_to_compute_maximum_no_numeric(self, data):
+
+        col = "att1"
+        a = Maximum(col)
         val = a.calculate(data).value
         assert isinstance(val, Failure)
 

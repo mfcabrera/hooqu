@@ -1,7 +1,7 @@
 from typing import Callable, Optional
 
 from hooqu.constraints.analysis_based_constraint import AnalysisBasedConstraint
-from hooqu.analyzers import Minimum, Size, Completeness
+from hooqu.analyzers import Minimum, Maximum, Size, Completeness
 from hooqu.constraints.constraint import Constraint, NamedConstraint
 
 
@@ -29,6 +29,19 @@ def min_constraint(
     constraint = AnalysisBasedConstraint(minimum, assertion, hint)
 
     return NamedConstraint(constraint, f"MinimumConstraint({minimum})")
+
+
+def max_constraint(
+    column: str,
+    assertion: Callable[[float], bool],
+    where: Optional[str] = None,
+    hint: Optional[str] = None,
+) -> Constraint:
+
+    maximum = Maximum(column, where)
+    constraint = AnalysisBasedConstraint(maximum, assertion, hint)
+
+    return NamedConstraint(constraint, f"MaximumConstraint({maximum})")
 
 
 def completeness_constraint(
