@@ -2,7 +2,14 @@ import numpy as np
 from hypothesis import given
 from tryingsnake import Failure, Success
 
-from hooqu.analyzers import Completeness, Maximum, Mean, Minimum, Size
+from hooqu.analyzers import (
+    Completeness,
+    Maximum,
+    Mean,
+    Minimum,
+    Size,
+    StandardDeviation,
+)
 from hooqu.metrics import DoubleMetric, Entity
 from hooqu.tests.fixtures import df_strategy
 
@@ -56,9 +63,7 @@ class TestBasicStatisticsAnalyzers:
         assert isinstance(metric.value, Success)
         np.testing.assert_equal(metric.value.get(), data[col].max())
 
-    def test_computes_max_value_with_predicate_correctly(
-        self, df_with_numeric_values
-    ):
+    def test_computes_max_value_with_predicate_correctly(self, df_with_numeric_values):
         data = df_with_numeric_values
         col = "att1"
         a = Maximum(col, where=f"item != '6'")
@@ -97,6 +102,34 @@ class TestBasicStatisticsAnalyzers:
         value = a.calculate(data).value
 
         assert value == Success(3.0)
+
+    @given(df_strategy())
+    def test_computes_std_correctly_for_numeric_data(self, data):
+        col = "att2"  # numeric here
+        a = StandardDeviation(col)
+        metric = a.calculate(data)
+        if len(data) and data[col].count():
+            # if df is not empty and contains non-nan values
+            assert isinstance(metric.value, Success)
+            np.testing.assert_equal(metric.value.get(), data[col].std(ddof=0))
+        else:
+            assert isinstance(metric.value, Failure)
+
+    @given(df_strategy())
+    def test_fail_to_compute_std_no_numeric(self, data):
+
+        col = "att1"
+        a = StandardDeviation(col)
+        val = a.calculate(data).value
+        assert isinstance(val, Failure)
+
+    def test_computes_std_value_with_predicate_correctly(self, df_with_numeric_values):
+        data = df_with_numeric_values
+        col = "att1"
+        a = StandardDeviation(col, where=f"item != '6'")
+        value = a.calculate(data).value
+
+        assert value == Success(1.4142135623730951)
 
 
 class TestCompletenessAnalyzer:

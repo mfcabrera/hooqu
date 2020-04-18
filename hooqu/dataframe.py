@@ -1,3 +1,8 @@
+"""
+Data-Frame like functions. The idea of this module is to an extend
+serve as an interface to specific implementation of dataframes. For now the support
+is focused solely on Pandas.
+"""
 from functools import partial
 
 import pandas as pd
@@ -9,7 +14,6 @@ class DataFrame(pd.DataFrame):
     This is a place holder to hold the expected methods from
     the dataframe implementaiton. For now we inherit from Pandas Dataframe.
     """
-
     pass
 
 
@@ -36,3 +40,39 @@ def count_all(series):
     if not isinstance(series, pd.Series):
         raise TypeError("Expected a Series")
     return len(series)
+
+
+def pop_variance(series):
+    """
+    This is an implementation of the population variance that returns
+    the values necessary to calculate the online population mean as described
+    by Welford's online algorithm. This implemented originally
+    by Spark's CentralMomentAgg (and modified by Deequ).
+
+    For Pandas like data-frames we don't need this unless we plan to aggregate
+    several calculations, therefore  if we will eventually just fallback to the
+    data-frame implementation on std/variance.
+
+    Note that contrary to pandas this calculate the population variance
+    i.e. degree of freedom (ddof=0)
+
+    References:
+    - https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance
+
+    it generates a tuple of n, avg, m2 where
+
+    n: is the number of elements
+    avg: accumulates the mean of the entire dataset
+    m2: aggregates the squared distances from the mean
+
+    This computation ignores Nan but does not infinite values.
+
+    """
+
+    if not isinstance(series, pd.Series):
+        raise TypeError("Expected a Series")
+
+    n = series.count()  # ignore nans
+    avg = series.mean()
+    m2 = (series - avg).pow(2).sum()
+    return n, avg, m2

@@ -31,6 +31,7 @@ class Mean(StandardScanShareableAnalyzer[MeanState]):
     ) -> Optional[MeanState]:
         sum_ = 0
         count = 0
+
         if len(result):  # otherwise an empty dataframe
             sum_ = result.iloc[offset][self.instance]
             count = result.iloc[offset + 1][self.instance]

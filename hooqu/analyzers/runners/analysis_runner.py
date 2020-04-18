@@ -158,7 +158,6 @@ def run_scanning_analyzers(
     results = None
     metrics_by_analyzer: Dict[Analyzer, Metric] = {}
     if len(shareable):
-
         try:
             aggregations = list(flatten(a._aggregation_functions() for a in shareable))
 
