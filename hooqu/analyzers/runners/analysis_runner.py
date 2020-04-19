@@ -1,11 +1,13 @@
 from dataclasses import dataclass, field
 from itertools import accumulate
+from collections import defaultdict
 from typing import Dict, List, Mapping, Optional, Sequence, Set
 
 import pandas as pd
-from more_itertools import flatten, partition
+from more_itertools import partition
 
 from hooqu.analyzers import Analyzer, ScanShareableAnalyzer
+from hooqu.analyzers.analyzer import AggDefinition
 from hooqu.analyzers.preconditions import find_first_failing
 from hooqu.metrics import Metric
 
@@ -147,10 +149,14 @@ def run_scanning_analyzers(
     others, shareable = partition(
         lambda a: isinstance(a, ScanShareableAnalyzer), analyzers
     )
-
     shareable = list(shareable)
 
-    aggregations = []
+    def merge_aggregations(aggregations_list: List[AggDefinition]):
+        ma = defaultdict(set)  # type: ignore
+        for ags in aggregations_list:
+            for k in ags:
+                ma[k] = ma[k] | ags[k]
+        return dict(ma)
 
     # Compute aggregation functions of shareable analyzers in a single pass over
     # the data
@@ -159,13 +165,22 @@ def run_scanning_analyzers(
     metrics_by_analyzer: Dict[Analyzer, Metric] = {}
     if len(shareable):
         try:
-            aggregations = list(flatten(a._aggregation_functions() for a in shareable))
+            # aggregations =
+            # list(flatten(a._aggregation_functions() for a in shareable))
+            # This is a dic with column -> aggregation lists
+            merged_aggregations = merge_aggregations(
+                [a._aggregation_functions() for a in shareable]
+            )
+            # aggregations_names = list(flatten(list(merged_aggregations.values())))
 
             # Compute offsets so that the analyzers can correctly pick their results
             # from the row
+            # FIXME: Note that this only works if the aggregation does not generates
+            # from now on internally the analyzers will use the function name so the
+            # offset is not used (at least for the pandas implementation)
             agg_functions = [0] + [len(a._aggregation_functions()) for a in shareable]
             offsets = list(accumulate(agg_functions, lambda a, b: a + b))[:-1]
-            results = data.agg(aggregations)
+            results = data.agg(merged_aggregations)
             for an, offset in zip(shareable, offsets):
                 metrics_by_analyzer[an] = _success_or_failure_metric_from(
                     an, results, offset

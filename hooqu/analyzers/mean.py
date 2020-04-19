@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import Callable, List, Optional, Sequence
+from typing import Callable, List, Optional
 
-from hooqu.analyzers.analyzer import (DoubledValuedState,
+from hooqu.analyzers.analyzer import (AggDefinition, DoubledValuedState,
                                       StandardScanShareableAnalyzer)
 from hooqu.analyzers.preconditions import has_column, is_numeric
 from hooqu.dataframe import DataFrame
@@ -33,19 +33,19 @@ class Mean(StandardScanShareableAnalyzer[MeanState]):
         count = 0
 
         if len(result):  # otherwise an empty dataframe
-            sum_ = result.iloc[offset][self.instance]
-            count = result.iloc[offset + 1][self.instance]
+            sum_ = result.loc["sum"][self.instance]
+            count = result.loc["count"][self.instance]
 
         return MeanState(sum_, count)
 
-    def _aggregation_functions(self, where: Optional[str] = None) -> Sequence[str]:
+    def _aggregation_functions(self, where: Optional[str] = None) -> AggDefinition:
         # Defines the aggregations to compute on the data
         # TODO: Handle the ConditionalCount for a dataframe (if possible)
         # in the original implementation  here a Spark.Column is returned
         # with using the "SUM (exp(where)) As LONG INT"
         # with Pandas-like dataframe the where clause need to be evaluated
         # before as the API does not get translated into SQL as with spark
-        return ("sum", "count")
+        return {self.instance: {"sum", "count"}}
 
     def additional_preconditions(self) -> List[Callable[[DataFrame], None]]:
         return [has_column(self.instance), is_numeric(self.instance)]

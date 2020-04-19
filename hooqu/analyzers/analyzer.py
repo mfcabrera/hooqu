@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Callable, Generic, List, Optional, Sequence, TypeVar, Union
+from typing import (Callable, Generic, List, Mapping, Optional, Sequence, Set,
+                    TypeVar, Union)
 
 from tryingsnake import Failure, Success
 
@@ -8,6 +9,8 @@ from hooqu.dataframe import DataFrame
 from hooqu.metrics import DoubleMetric, Entity, Metric
 
 S = TypeVar("S")
+
+AggDefinition = Mapping[str, Set[Union[str, Callable]]]
 
 
 # TODO: evcentually move to corresponding files
@@ -133,11 +136,30 @@ class ScanShareableAnalyzer(Analyzer, Generic[S]):
     can share scans over the data """
 
     @abstractmethod
-    def _aggregation_functions(self,) -> Union[Sequence[str], str]:
+    def _aggregation_functions(
+        self,
+    ) -> Union[Sequence[Union[str, Callable]], Mapping[str, Union[str, Callable]]]:
         """
         Defines the aggregations to compute on the data
         """
         pass
+
+    def _aggregation_functions_names(self):
+        aggs = self._aggregation_functions()
+
+        if isinstance(aggs, dict):
+            funcs = list(aggs.values())
+        else:
+            funcs = list(aggs)
+
+        names: List[str] = []
+        for f in funcs:
+            if isinstance(f, str):
+                names.append(f)
+            elif callable(f):
+                names.append(f.__name__)
+            else:
+                raise ValueError("Invalid aggregation type")
 
     @abstractmethod
     def from_aggregation_result(self, result, offset) -> Optional[S]:

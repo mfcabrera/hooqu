@@ -1,8 +1,9 @@
-from dataclasses import dataclass
 import math
-from typing import Callable, List, Optional, Sequence, Any
+from dataclasses import dataclass
+from typing import Callable, List, Optional
 
-from hooqu.analyzers.analyzer import DoubledValuedState, StandardScanShareableAnalyzer
+from hooqu.analyzers.analyzer import (AggDefinition, DoubledValuedState,
+                                      StandardScanShareableAnalyzer)
 from hooqu.analyzers.preconditions import has_column, is_numeric
 from hooqu.dataframe import DataFrame, pop_variance
 
@@ -50,15 +51,13 @@ class StandardDeviation(StandardScanShareableAnalyzer[StandardDeviationState]):
         if not len(result):
             return StandardDeviationState(0, 0, 0)
 
-        values = result.iloc[offset][self.instance]
+        values = result.loc["pop_variance"][self.instance]
         n, avg, m2 = values
 
         return StandardDeviationState(n, avg, m2)
 
-    def _aggregation_functions(self, where: Optional[str] = None) -> Sequence[Any]:
-        return (pop_variance,)
-
-    # ({self.instance: pop_variance}, )
+    def _aggregation_functions(self, where: Optional[str] = None) -> AggDefinition:
+        return {self.instance: {pop_variance}}
 
     def additional_preconditions(self) -> List[Callable[[DataFrame], None]]:
         return [has_column(self.instance), is_numeric(self.instance)]

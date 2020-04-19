@@ -76,7 +76,8 @@ class Check:
 
         return analyzers
 
-    # I am implementing CheckWithLastConstraintFilterable but not sure if it is necessary
+    # I am implementing CheckWithLastConstraintFilterable but not sure if
+    # it is necessary
     # Because having a Spark SQL predicate does not make a lot of sense
     # for pandas-like dataframe
     # however it might make sense later on
