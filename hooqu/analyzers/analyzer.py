@@ -131,6 +131,25 @@ class Analyzer(ABC):
         return f"{self.name}({self.instance})"
 
 
+class NonScanAnalyzer(Analyzer, Generic[S]):
+    """Analyzer that does not need to run any aggregation and can extract
+    the information straight from the dataframe. This is a special
+    implementation of Hooqu
+    for the Size Analyzer.
+    """
+    def compute_metric_from(self, state=None) -> DoubleMetric:
+        if state is not None:
+            return metric_from_value(
+                state.metric_value(), self.name, self.instance, self.entity
+            )
+
+        else:
+            return metric_from_empty(self, self.name, self.instance, self.entity)
+
+    def to_failure_metric(self, ex: Exception) -> DoubleMetric:
+        return metric_from_failure(ex, self.name, self.instance, self.entity)
+
+
 class ScanShareableAnalyzer(Analyzer, Generic[S]):
     """An analyzer that runs a set of aggregation functions over the data,
     can share scans over the data """

@@ -6,7 +6,7 @@ from typing import Dict, List, Mapping, Optional, Sequence, Set
 import pandas as pd
 from more_itertools import partition
 
-from hooqu.analyzers import Analyzer, ScanShareableAnalyzer
+from hooqu.analyzers import Analyzer, ScanShareableAnalyzer, NonScanAnalyzer
 from hooqu.analyzers.analyzer import AggDefinition
 from hooqu.analyzers.preconditions import find_first_failing
 from hooqu.metrics import Metric
@@ -54,7 +54,9 @@ class AnalyzerContext:
             # TODO: rename metric
             renamed.extend(map(lambda x: x, mp[a].flatten()))
 
-        return pd.DataFrame(metric.asdict() for metric in renamed)
+        df = pd.DataFrame(metric.asdict() for metric in renamed)
+        df = df.sort_values(by="entity", ascending=False, ignore_index=True)
+        return df
 
 
 def do_analysis_run(
@@ -116,15 +118,33 @@ def do_analysis_run(
     # TODO: Deal with gruping analyzers (for now not necessary)
     # TODO: Deeque implement also KLL Sketches and what not for now not implmented here
 
-    non_grouped_metrics = run_scanning_analyzers(
-        data, passed_analyzers, aggregate_with, save_state_with
+    scanning_analyzers = list(
+        filter(lambda an: isinstance(an, ScanShareableAnalyzer), passed_analyzers)
     )
 
-    # TODO:
+    non_scanning_analyzers = list(
+        filter(lambda an: isinstance(an, NonScanAnalyzer), passed_analyzers)
+    )
+
+    non_grouped_metrics = run_scanning_analyzers(
+        data, scanning_analyzers, aggregate_with, save_state_with
+    )
+
+    non_scanning_metrics = run_non_scanning_analyzers(data, non_scanning_analyzers)
+
+    # TODO: (if necessary)
     # grouped_metrics = blah blah and then join with others
     # so we have a resulting analyzer context
 
-    return non_grouped_metrics + precondition_failures
+    return non_grouped_metrics + non_scanning_metrics + precondition_failures
+
+
+def run_non_scanning_analyzers(data, analyzers: Sequence[Analyzer]):
+    metrics_by_analyzer: Dict[Analyzer, Metric] = {}
+    for an in analyzers:
+        metrics_by_analyzer[an] = an.calculate(data)
+
+    return AnalyzerContext(metrics_by_analyzer)
 
 
 def compute_precondition_failure_metrics(

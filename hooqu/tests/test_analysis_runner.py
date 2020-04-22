@@ -3,7 +3,7 @@ from pandas.testing import assert_frame_equal
 from tryingsnake import Success
 
 from hooqu.analyzers import (Completeness, Maximum, Mean, Minimum,
-                             StandardDeviation)
+                             StandardDeviation, Size)
 from hooqu.analyzers.runners.analysis_runner import (AnalyzerContext,
                                                      do_analysis_run)
 from hooqu.metrics import DoubleMetric, Entity
@@ -12,7 +12,7 @@ from hooqu.metrics import DoubleMetric, Entity
 class TestAnalysis:
     def test_return_result_for_configured_analyzers(self, df_full):
         analyzers = [
-            # Size(),  # disabled until we figure a way of fixing it
+            Size(),
             Minimum("item"),
             Completeness("item"),
         ]
@@ -23,14 +23,14 @@ class TestAnalysis:
 
         expected = pd.DataFrame(
             [
-                # ("DATASET", "*", "Size", 4.0),
+                ("DATASET", "*", "Size", 4.0),
                 ("COLUMN", "item", "Minimum", 1.0),
                 ("COLUMN", "item", "Completeness", 1.0),
             ],
             columns=("entity", "instance", "name", "value"),
         )
 
-        assert_frame_equal(sm, expected)
+        assert_frame_equal(sm, expected, check_like=True)
 
     def test_run_individual_analyzer_only_once(self, df_full):
 

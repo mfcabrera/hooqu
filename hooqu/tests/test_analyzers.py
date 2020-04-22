@@ -18,9 +18,6 @@ from hooqu.tests.fixtures import df_strategy
 class TestSizeAnalyzer:
 
     @given(df_strategy())
-    @pytest.mark.skip(
-        reason="Size analyzer is not working with current aggregation strategy"
-    )
     def test_computes_correct_metrics(self, data):
         a = Size()
         metric = a.calculate(data)
