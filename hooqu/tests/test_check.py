@@ -1,7 +1,7 @@
 from hooqu.checks import Check, CheckLevel, CheckStatus
 from hooqu.analyzers.runners import AnalyzerContext
 from hooqu.analyzers.runners.analysis_runner import do_analysis_run
-from hooqu.analyzers import Minimum, Maximum, Mean, StandardDeviation
+from hooqu.analyzers import Minimum, Maximum, Mean, StandardDeviation, Sum
 
 
 def run_checks(data, *checks) -> AnalyzerContext:
@@ -68,6 +68,7 @@ class TestChecksOnBasicStats:
             Maximum("att1"),
             Mean("att1"),
             StandardDeviation("att1"),
+            Sum("att1"),
         ]
 
         context_numeric = do_analysis_run(df, analyzers)
@@ -84,4 +85,7 @@ class TestChecksOnBasicStats:
         assert is_success(
             base_check.has_standard_deviation("att1", lambda v: v == 1.707825127659933),
             context_numeric,
+        )
+        assert is_success(
+            base_check.has_sum("att1", lambda v: v == 21.0), context_numeric
         )

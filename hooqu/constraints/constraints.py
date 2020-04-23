@@ -7,6 +7,7 @@ from hooqu.analyzers import (
     Minimum,
     Size,
     StandardDeviation,
+    Sum,
 )
 from hooqu.constraints.analysis_based_constraint import AnalysisBasedConstraint
 from hooqu.constraints.constraint import Constraint, NamedConstraint
@@ -74,6 +75,19 @@ def mean_constraint(
     constraint = AnalysisBasedConstraint(mean, assertion, hint)
 
     return NamedConstraint(constraint, f"MeanConstraint({mean})")
+
+
+def sum_constraint(
+    column: str,
+    assertion: Callable[[float], bool],
+    where: Optional[str] = None,
+    hint: Optional[str] = None,
+) -> Constraint:
+
+    sum_ = Sum(column, where)
+    constraint = AnalysisBasedConstraint(sum_, assertion, hint)
+
+    return NamedConstraint(constraint, f"SumConstraint({sum})")
 
 
 def standard_deviation_constraint(

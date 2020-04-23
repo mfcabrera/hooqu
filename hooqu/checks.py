@@ -15,6 +15,7 @@ from hooqu.constraints import (
     min_constraint,
     size_constraint,
     standard_deviation_constraint,
+    sum_constraint,
 )
 from hooqu.constraints.constraint import ConstraintStatus
 
@@ -160,6 +161,18 @@ class Check:
     ):
         return self.add_filterable_constraint(
             lambda filter_: standard_deviation_constraint(
+                column, assertion, filter_, hint
+            )
+        )
+
+    def has_sum(
+        self,
+        column: str,
+        assertion: Callable[[float], bool],
+        hint: Optional[str] = None,
+    ):
+        return self.add_filterable_constraint(
+            lambda filter_: sum_constraint(
                 column, assertion, filter_, hint
             )
         )
