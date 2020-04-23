@@ -7,3 +7,4 @@ from hooqu.analyzers.mean import Mean  # noqa:
 from hooqu.analyzers.minimum import Minimum  # noqa:
 from hooqu.analyzers.size import Size  # noqa:
 from hooqu.analyzers.standard_deviation import StandardDeviation  # noqa:
+from hooqu.analyzers.sum import Sum  # noqa:

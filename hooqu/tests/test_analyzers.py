@@ -1,4 +1,3 @@
-import pytest
 import numpy as np
 from hypothesis import given
 from tryingsnake import Failure, Success
@@ -10,6 +9,7 @@ from hooqu.analyzers import (
     Minimum,
     Size,
     StandardDeviation,
+    Sum,
 )
 from hooqu.metrics import DoubleMetric, Entity
 from hooqu.tests.fixtures import df_strategy
@@ -132,6 +132,29 @@ class TestBasicStatisticsAnalyzers:
         value = a.calculate(data).value
 
         assert value == Success(1.4142135623730951)
+
+    @given(df_strategy())
+    def test_computes_sum_correctly_for_numeric_data(self, data):
+        col = "att2"  # numeric here
+        a = Sum(col)
+        metric = a.calculate(data)
+        assert isinstance(metric.value, Success)
+        np.testing.assert_equal(metric.value.get(), data[col].sum())
+
+    @given(df_strategy())
+    def test_fail_to_compute_sum_no_numeric(self, data):
+        col = "att1"
+        a = Sum(col)
+        val = a.calculate(data).value
+        assert isinstance(val, Failure)
+
+    def test_computes_sum_value_with_predicate_correctly(self, df_with_numeric_values):
+        data = df_with_numeric_values
+        col = "att1"
+        a = Sum(col, where=f"item != '6'")
+        value = a.calculate(data).value
+
+        assert value == Success(15)
 
 
 class TestCompletenessAnalyzer:
