@@ -14,6 +14,7 @@ from hooqu.constraints import (
     mean_constraint,
     min_constraint,
     size_constraint,
+    standard_deviation_constraint,
 )
 from hooqu.constraints.constraint import ConstraintStatus
 
@@ -130,6 +131,16 @@ class Check:
             lambda filter_: completeness_constraint(column, IS_ONE, filter_, hint)
         )
 
+    def has_completeness(
+        self,
+        column: str,
+        assertion: Callable[[float], bool],
+        hint: Optional[str] = None,
+    ):
+        return self.add_filterable_constraint(
+            lambda filter_: completeness_constraint(column, assertion, filter_, hint)
+        )
+
     def has_mean(
         self,
         column: str,
@@ -139,6 +150,18 @@ class Check:
 
         return self.add_filterable_constraint(
             lambda filter_: mean_constraint(column, assertion, filter_, hint)
+        )
+
+    def has_standard_deviation(
+        self,
+        column: str,
+        assertion: Callable[[float], bool],
+        hint: Optional[str] = None,
+    ):
+        return self.add_filterable_constraint(
+            lambda filter_: standard_deviation_constraint(
+                column, assertion, filter_, hint
+            )
         )
 
     def evaluate(self, context: AnalyzerContext):

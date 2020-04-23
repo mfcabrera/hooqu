@@ -13,3 +13,4 @@ from hooqu.constraints.constraints import max_constraint  # noqa: F401
 from hooqu.constraints.constraints import mean_constraint  # noqa: F401
 from hooqu.constraints.constraints import min_constraint  # noqa: F401
 from hooqu.constraints.constraints import size_constraint  # noqa: F401
+from hooqu.constraints.constraints import standard_deviation_constraint  # noqa: F401

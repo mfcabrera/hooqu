@@ -1,6 +1,13 @@
 from typing import Callable, Optional
 
-from hooqu.analyzers import Completeness, Maximum, Mean, Minimum, Size
+from hooqu.analyzers import (
+    Completeness,
+    Maximum,
+    Mean,
+    Minimum,
+    Size,
+    StandardDeviation,
+)
 from hooqu.constraints.analysis_based_constraint import AnalysisBasedConstraint
 from hooqu.constraints.constraint import Constraint, NamedConstraint
 
@@ -67,3 +74,16 @@ def mean_constraint(
     constraint = AnalysisBasedConstraint(mean, assertion, hint)
 
     return NamedConstraint(constraint, f"MeanConstraint({mean})")
+
+
+def standard_deviation_constraint(
+    column: str,
+    assertion: Callable[[float], bool],
+    where: Optional[str] = None,
+    hint: Optional[str] = None,
+) -> Constraint:
+
+    std = StandardDeviation(column, where)
+    constraint = AnalysisBasedConstraint(std, assertion, hint)
+
+    return NamedConstraint(constraint, f"StandardDeviationConstraint({std})")
