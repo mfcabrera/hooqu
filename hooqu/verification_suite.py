@@ -89,10 +89,6 @@ class VerificationSuite:
             [a for check in checks for a in check.required_analyzers()]
         )
 
-        # analysis runner do analysis runner
-        # this call
-        # AnalysisRunner.doAnalysisRun(
-
         # This rhis returns AnalysisContext
         analysis_result = do_analysis_run(data, analyzers)
 

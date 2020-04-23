@@ -58,6 +58,37 @@ def df_with_numeric_values():
     )
 
 
+@pytest.fixture
+def df_comp_incomp():
+    return pd.DataFrame(
+        [
+            ("1", "a", "f"),
+            ("2", "b", "d"),
+            ("3", "a", None),
+            ("4", "a", "f"),
+            ("5", "b", None),
+            ("6", "a", "f")
+        ],
+        columns=("item", "att1", "att2"),
+    )
+
+
+@pytest.fixture
+def df_with_unique_columns():
+    return pd.DataFrame(
+        [
+            ("1", "0", "3", "1", "5", "0"),
+            ("2", "0", "3", "2", "6", "0"),
+            ("3", "0", "3", None, "7", "0"),
+            ("4", "5", None, "3", "0", "4"),
+            ("5", "6", None, "4", "0", "5"),
+            ("6", "7", None, "5", "0", "6")
+        ],
+        columns=("unique", "nonUnique", "nonUniqueWithNulls", "uniqueWithNulls",
+                 "onlyUniqueWithOtherNonUnique", "halfUniqueCombinedWithNonUnique")
+    )
+
+
 def df_strategy(allow_nan=True, allow_infinity=True):
     """
     This strategies generates dataframes that might containing
