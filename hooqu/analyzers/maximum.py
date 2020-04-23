@@ -12,8 +12,8 @@ class MaxState(DoubledValuedState):
 
     max_value: float
 
-    def sum(self, other: "MaxState"):
-        return max(self.max_value, other.max_value)
+    def sum(self, other: "MaxState") -> "MaxState":
+        return MaxState(max(self.max_value, other.max_value))
 
     def metric_value(self):
         return self.max_value
