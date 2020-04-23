@@ -26,11 +26,10 @@ class StandardDeviationState(DoubledValuedState):
         )
 
     def metric_value(self) -> float:
-        if math.isinf(self.m2) and math.isinf(self.avg):
-            return float("nan")
-        if self.m2 == 0 and math.isinf(self.avg):
-            return float("nan")
-        if math.isnan(self.avg) or math.isnan(self.m2):
+        print(self)
+        if math.isinf(self.avg):
+            return float("inf")
+        if math.isnan(self.avg):
             return float("nan")
 
         return math.sqrt(self.m2 / self.n)

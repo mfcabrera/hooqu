@@ -1,5 +1,7 @@
+import math
 import numpy as np
-from hypothesis import given
+import pandas as pd
+from hypothesis import example, given
 from tryingsnake import Failure, Success
 
 from hooqu.analyzers import (
@@ -16,7 +18,6 @@ from hooqu.tests.fixtures import df_strategy
 
 
 class TestSizeAnalyzer:
-
     @given(df_strategy())
     def test_computes_correct_metrics(self, data):
         a = Size()
@@ -106,14 +107,36 @@ class TestBasicStatisticsAnalyzers:
         assert value == Success(3.0)
 
     @given(df_strategy())
+    @example(
+        pd.DataFrame(
+            [(0, 0.0, 8.988466e307), (1, 0.0, 8.988466e307)],
+            columns=["item", "att1", "att2"],
+        )
+    )
+    @example(
+        pd.DataFrame(
+            [(0, 0.0, 0.0), (1, 0.0, float("inf"))], columns=["item", "att1", "att2"]
+        )
+    )
     def test_computes_std_correctly_for_numeric_data(self, data):
+
+        # workaround here:
+        # Pandas is not very coherent when calculating std.
+        # with inf it will yield nan but with large numbers
+        # it will yield inf.
+
         col = "att2"  # numeric here
         a = StandardDeviation(col)
         metric = a.calculate(data)
         if len(data) and data[col].count():
             # if df is not empty and contains non-nan values
             assert isinstance(metric.value, Success)
-            np.testing.assert_equal(metric.value.get(), data[col].std(ddof=0))
+            pandas_result = data[col].std(ddof=0)
+            # pandas somethings return nan when it should return inf
+            if math.isnan(pandas_result):
+                if not math.isnan(data["att2"].sum()):
+                    pandas_result = float("inf")
+            np.testing.assert_equal(metric.value.get(), pandas_result)
         else:
             assert isinstance(metric.value, Failure)
 
