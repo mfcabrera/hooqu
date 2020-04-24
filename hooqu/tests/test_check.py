@@ -89,3 +89,19 @@ class TestChecksOnBasicStats:
         assert is_success(
             base_check.has_sum("att1", lambda v: v == 21.0), context_numeric
         )
+
+    def test_correctly_evaluate_mean_constraints(self, df_with_numeric_values):
+        # FIXME: uncomment when `where` is implemented (if evert)
+        df = df_with_numeric_values
+        mean_check = Check(CheckLevel.ERROR, "a").has_mean("att1", lambda v: v == 3.5)
+
+        # mean_check_with_filter = (
+        #     Check(CheckLevel.ERROR, "a")
+        #     .has_mean("att1", lambda v: v == 3.5)
+        #     .where("att2 > 0")
+        # )
+
+        ctx = run_checks(df, mean_check)
+
+        assert is_success(mean_check, ctx)
+        # assert is_success(mean_check_with_filter, ctx)

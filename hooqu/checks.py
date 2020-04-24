@@ -213,7 +213,7 @@ class CheckWithLastConstraintFilterable(Check):
         Parameters
         -----------
         filter:
-            A Pandas `query` sring to evaluate(or maybe in the future Spark SQL)
+            A Pandas `query` sring to evaluate.
 
         Returns
         --------

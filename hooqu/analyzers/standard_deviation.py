@@ -26,7 +26,7 @@ class StandardDeviationState(DoubledValuedState):
         )
 
     def metric_value(self) -> float:
-        print(self)
+
         if math.isinf(self.avg):
             return float("inf")
         if math.isnan(self.avg):
