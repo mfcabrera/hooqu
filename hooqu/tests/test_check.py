@@ -105,3 +105,22 @@ class TestChecksOnBasicStats:
 
         assert is_success(mean_check, ctx)
         # assert is_success(mean_check_with_filter, ctx)
+
+    def test_correctly_evaluate_size_constraint(self, df_with_numeric_values):
+        df = df_with_numeric_values
+        nrows = len(df)
+
+        check1 = Check(CheckLevel.ERROR, "group-1-S-1").has_size(lambda r: r == nrows)
+        check2 = Check(CheckLevel.WARNING, "group-1-S-2").has_size(lambda r: r == nrows)
+        check3 = Check(CheckLevel.ERROR, "group-1-E").has_size(lambda r: r != nrows)
+        check4 = Check(CheckLevel.WARNING, "group-1-W").has_size(lambda r: r != nrows)
+        check5 = Check(CheckLevel.WARNING, "group-1-W-range").has_size(
+            lambda r: r > 0 and r < nrows + 1
+        )
+
+        context = run_checks(df, check1, check2, check3, check4, check5)
+
+        assert_evals_to(check2, context, CheckStatus.SUCCESS)
+        assert_evals_to(check3, context, CheckStatus.ERROR)
+        assert_evals_to(check4, context, CheckStatus.WARNING)
+        assert_evals_to(check5, context, CheckStatus.SUCCESS)
