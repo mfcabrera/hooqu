@@ -37,7 +37,6 @@ class ConstraintDecorator(Constraint):
 
     @property
     def inner(self) -> Constraint:
-        """I'm the 'x' property."""
         if isinstance(self._inner, ConstraintDecorator):
             return self._inner.inner
         else:

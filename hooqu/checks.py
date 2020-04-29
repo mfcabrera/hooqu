@@ -220,8 +220,6 @@ class CheckWithLastConstraintFilterable(Check):
         A filtered Check
 
         """
-        # FIXME: NOT WORKING
-        raise NotImplementedError("Not yet implemented properly on the analyzer class")
         adjusted_constraints = self.constraints[:-1] + (self.create_replacement(query),)
         return Check(self.level, self.description, adjusted_constraints)
 

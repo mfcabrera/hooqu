@@ -1,7 +1,7 @@
-from hooqu.checks import Check, CheckLevel, CheckStatus
+from hooqu.analyzers import Maximum, Mean, Minimum, StandardDeviation, Sum
 from hooqu.analyzers.runners import AnalyzerContext
 from hooqu.analyzers.runners.analysis_runner import do_analysis_run
-from hooqu.analyzers import Minimum, Maximum, Mean, StandardDeviation, Sum
+from hooqu.checks import Check, CheckLevel, CheckStatus
 
 
 def run_checks(data, *checks) -> AnalyzerContext:
@@ -39,10 +39,7 @@ class TestCompletenessCheck:
             .has_completeness("att1", lambda v: v > 0.8)  # 0.66
         )
 
-        print("")
         context = run_checks(df, check1, check2, check3)
-        for k, v in context.metric_map.items():
-            print(f"{k} -> {v}")
 
         assert_evals_to(check1, context, CheckStatus.SUCCESS)
         assert_evals_to(check2, context, CheckStatus.ERROR)
@@ -91,20 +88,20 @@ class TestChecksOnBasicStats:
         )
 
     def test_correctly_evaluate_mean_constraints(self, df_with_numeric_values):
-        # FIXME: uncomment when `where` is implemented (if evert)
+
         df = df_with_numeric_values
         mean_check = Check(CheckLevel.ERROR, "a").has_mean("att1", lambda v: v == 3.5)
 
-        # mean_check_with_filter = (
-        #     Check(CheckLevel.ERROR, "a")
-        #     .has_mean("att1", lambda v: v == 3.5)
-        #     .where("att2 > 0")
-        # )
+        mean_check_with_filter = (
+            Check(CheckLevel.ERROR, "a")
+            .has_mean("att1", lambda v: v == 5.0)
+            .where("att2 > 0")
+        )
 
-        ctx = run_checks(df, mean_check)
+        ctx = run_checks(df, mean_check, mean_check_with_filter)
 
         assert is_success(mean_check, ctx)
-        # assert is_success(mean_check_with_filter, ctx)
+        assert is_success(mean_check_with_filter, ctx)
 
     def test_correctly_evaluate_size_constraint(self, df_with_numeric_values):
         df = df_with_numeric_values
@@ -120,6 +117,7 @@ class TestChecksOnBasicStats:
 
         context = run_checks(df, check1, check2, check3, check4, check5)
 
+        assert_evals_to(check1, context, CheckStatus.SUCCESS)
         assert_evals_to(check2, context, CheckStatus.SUCCESS)
         assert_evals_to(check3, context, CheckStatus.ERROR)
         assert_evals_to(check4, context, CheckStatus.WARNING)

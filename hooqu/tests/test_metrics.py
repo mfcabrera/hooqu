@@ -1,5 +1,6 @@
+from tryingsnake import Failure, Success
+
 from hooqu.metrics import DoubleMetric, Entity
-from tryingsnake import Success, Failure
 
 
 def test_double_metric_should_flatten():

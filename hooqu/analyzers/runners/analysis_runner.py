@@ -6,7 +6,7 @@ from typing import Dict, List, Mapping, Optional, Sequence, Set
 import pandas as pd
 from more_itertools import partition
 
-from hooqu.analyzers import Analyzer, ScanShareableAnalyzer, NonScanAnalyzer
+from hooqu.analyzers import Analyzer, ScanShareableAnalyzer
 from hooqu.analyzers.analyzer import AggDefinition
 from hooqu.analyzers.preconditions import find_first_failing
 from hooqu.metrics import Metric
@@ -109,34 +109,20 @@ def do_analysis_run(
             analyzers_to_run,
         )
     )
-
     # Create the failure metrics from the precondition violations
 
     failed_analyzers = set(analyzers_to_run) - set(passed_analyzers)
     precondition_failures = compute_precondition_failure_metrics(failed_analyzers, data)
 
-    # TODO: Deal with gruping analyzers (for now not necessary)
-    # TODO: Deeque implement also KLL Sketches and what not for now not implmented here
+    # Originally the idea is be able to run all the analysis on a single scan
+    # assuming that internally pandas would do something like that
+    # however apparently there is no big gain from running all aggregations at once
+    # so for now we run the aggregation sequentially.
 
-    scanning_analyzers = list(
-        filter(lambda an: isinstance(an, ScanShareableAnalyzer), passed_analyzers)
-    )
+    # TODO: Deal with gruping analyzers (if necessary)
+    metrics = run_analyzers_sequentially(data, analyzers)
 
-    non_scanning_analyzers = list(
-        filter(lambda an: isinstance(an, NonScanAnalyzer), passed_analyzers)
-    )
-
-    non_grouped_metrics = run_scanning_analyzers(
-        data, scanning_analyzers, aggregate_with, save_state_with
-    )
-
-    non_scanning_metrics = run_non_scanning_analyzers(data, non_scanning_analyzers)
-
-    # TODO: (if necessary)
-    # grouped_metrics = blah blah and then join with others
-    # so we have a resulting analyzer context
-
-    return non_grouped_metrics + non_scanning_metrics + precondition_failures
+    return metrics + precondition_failures
 
 
 def run_non_scanning_analyzers(data, analyzers: Sequence[Analyzer]):
@@ -161,7 +147,29 @@ def compute_precondition_failure_metrics(
     return AnalyzerContext(failures)
 
 
-# Implemented in AnalysisRunner
+def run_analyzers_sequentially(
+        data, analyzers: Sequence[Analyzer], aggregate_with=None, save_state_with=None
+) -> AnalyzerContext:
+    """
+    Apparently from the initial tests I made there is not a lot of gain from
+    running all the aggregations at once.
+    """
+
+    if not len(analyzers):
+        return AnalyzerContext()
+
+    metrics_by_analyzer: Dict[Analyzer, Metric] = {}
+    for an in analyzers:
+        try:
+            metrics_by_analyzer[an] = an.calculate(data)
+        except Exception as e:
+            metrics_by_analyzer[an] = an.to_failure_metric(e)
+
+    analyzer_context = AnalyzerContext(metrics_by_analyzer)
+
+    return analyzer_context
+
+
 def run_scanning_analyzers(
     data, analyzers: Sequence[Analyzer], aggregate_with=None, save_state_with=None
 ) -> AnalyzerContext:

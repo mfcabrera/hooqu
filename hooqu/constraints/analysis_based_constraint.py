@@ -1,9 +1,10 @@
 from typing import Any, Callable, Mapping, Optional
 
+from tryingsnake import Success
+
 from hooqu.analyzers import Analyzer
 from hooqu.constraints.constraint import Constraint, ConstraintResult, ConstraintStatus
 from hooqu.metrics import Metric
-from tryingsnake import Success
 
 _MISSING_ANALYSIS_MSG = "Missing Analysis, can't run the constraint!"
 _ASSERTION_EXCEPTION_MSG = "Can't execute the assertion"
@@ -24,10 +25,13 @@ class AnalysisBasedConstraint(Constraint):
     """
 
     # TODO: Check if implementing value pickler makes sense
-    def __init__(self, analyzer: Analyzer,
-                 assertion: Callable[[float], bool],
-                 value_picker: Optional[Callable[[], Any]] = None,
-                 hint: Optional[str] = None):
+    def __init__(
+        self,
+        analyzer: Analyzer,
+        assertion: Callable[[float], bool],
+        value_picker: Optional[Callable[[], Any]] = None,
+        hint: Optional[str] = None,
+    ):
         """
         Parameters
         ----------

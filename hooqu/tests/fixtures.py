@@ -67,7 +67,7 @@ def df_comp_incomp():
             ("3", "a", None),
             ("4", "a", "f"),
             ("5", "b", None),
-            ("6", "a", "f")
+            ("6", "a", "f"),
         ],
         columns=("item", "att1", "att2"),
     )
@@ -82,10 +82,16 @@ def df_with_unique_columns():
             ("3", "0", "3", None, "7", "0"),
             ("4", "5", None, "3", "0", "4"),
             ("5", "6", None, "4", "0", "5"),
-            ("6", "7", None, "5", "0", "6")
+            ("6", "7", None, "5", "0", "6"),
         ],
-        columns=("unique", "nonUnique", "nonUniqueWithNulls", "uniqueWithNulls",
-                 "onlyUniqueWithOtherNonUnique", "halfUniqueCombinedWithNonUnique")
+        columns=(
+            "unique",
+            "nonUnique",
+            "nonUniqueWithNulls",
+            "uniqueWithNulls",
+            "onlyUniqueWithOtherNonUnique",
+            "halfUniqueCombinedWithNonUnique",
+        ),
     )
 
 
