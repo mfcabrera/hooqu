@@ -51,7 +51,7 @@ class AnalysisBasedConstraint(Constraint):
         self._assertion = assertion  # type: ignore
         self._hint = hint
 
-    def _calculate_and_evaluate(self, data):
+    def calculate_and_evaluate(self, data):
         metric = self.analyzer.calculate(data)
         return self.evaluate({self.analyzer: metric})
 

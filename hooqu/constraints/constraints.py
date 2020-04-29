@@ -19,6 +19,9 @@ def size_constraint(
     hint: Optional[str] = None,
 ) -> Constraint:
 
+    if not callable(assertion):
+        raise ValueError("assertion is not a callable")
+
     size = Size(where)
     constraint = AnalysisBasedConstraint(size, assertion, hint)
 
