@@ -10,3 +10,4 @@ coverage
 pytest
 pytest-cov
 black
+hypothesis
