@@ -9,12 +9,17 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [
-    # TODO: put package requirements here
-]
+with open('requirements.txt') as f:
+    install_requires = [l.strip() for l in f]
 
-test_requirements = [
-    # TODO: put package test requirements here
+with open('requirements_dev.txt') as f:
+    tests_require = [l.strip() for l in f]
+
+docs_require = [
+    'Sphinx',
+    'sphinx-rtd-theme',
+    'numpydoc',
+    'sphinx-autodoc-typehints'
 ]
 
 setup(
@@ -31,7 +36,7 @@ setup(
     package_dir={'hooqu':
                  'hooqu'},
     include_package_data=True,
-    install_requires=requirements,
+    install_requires=install_requires,
     license="Apache Software License 2.0",
     zip_safe=False,
     keywords='hooqu',
@@ -39,15 +44,12 @@ setup(
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
-        'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     test_suite='tests',
-    tests_require=test_requirements
+    extras_require={
+        'testing': tests_require,
+        'docs': docs_require,
+    },
 )

@@ -9,7 +9,7 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 
 
-class DataFrame(pd.DataFrame):
+class DataFrame:
     """
     This is a place holder to hold the expected methods from
     the dataframe implementaiton. For now we inherit from Pandas Dataframe.

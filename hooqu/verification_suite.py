@@ -76,7 +76,8 @@ class VerificationSuite:
             loader from which we retrieve initial states to aggregate (optional)
         save_states_with: not implemented
             persist resulting states for the configured analyzers (optional)
-        metrics_repository_options Options related to the MetricsRepository
+        metrics_repository_options:
+            Options related to the MetricsRepository
 
         Returns
         --------
