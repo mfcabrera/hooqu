@@ -17,6 +17,7 @@ Hooqu - Unit Tests for Data
      :alt: Updates
 
 
+
 Hooqu is a library built on top of Pandas-like dataframes for defining "unit tests for data", which measure data quality datasets. Hooqu is a "spiritual" Python port of `Apache Deequ <https://github.com/awslabs/deequ/>`_
 
 This library is currently in an experimental state and I am happy to receive feedback and contributions.
@@ -62,8 +63,8 @@ do not contain NULL values, and so on. If these assumptions are violated, your a
 The idea behind deequ is to explicitly state these assumptions in the form of a "unit-test" for data,
 which can be verified on a piece of data at hand. If the data has errors, we can "quarantine" and fix it, before we feed to an application.
 
-The main entry point for defining how you expect your data to look is the :py:class:`~hooqu.verification_suite.VerificationSuite` from which
-you can add  :py:mod:`~hooqu.checks` that define constraints on attributes of the data. In this example, we test for the following properties of our data:
+The main entry point for defining how you expect your data to look is the `VerificationSuite <https://github.com/mfcabrera/hooqu/blob/master/hooqu/verification_suite.py>`_ from which
+you can add  `Checks <https://github.com/mfcabrera/hooqu/blob/master/hooqu/checks.py>`_ that define constraints on attributes of the data. In this example, we test for the following properties of our data:
 
 - there are 5 rows in total
 - values of the id attribute are never NULL and unique
@@ -97,7 +98,7 @@ In code this looks as follows:
 
 After calling ``run``, hooqu will compute some metrics on the data. Afterwards it invokes your assertion functions
 (e.g., ``lambda sz: sz == 5`` for the size check) on these metrics to see if the constraints hold on the data.
-We can inspect the :py:class:`~hooqu.verification_suite.VerificationResult` to see if the test found errors:
+We can inspect the `VerificationResult <https://github.com/mfcabrera/hooqu/blob/b2c522854c674db9496c89d540df3fe4bb30d882/hooqu/verification_suite.py#L17>`_ to see if the test found errors:
 
 .. code:: python
 
@@ -127,13 +128,11 @@ References
 -----------
 
 This project is a "spiritual" port of `Apache Deequ <https://github.com/awslabs/deequ/>`_ and thus tries to emulate
-when possible the API (in a pythonic way when possible). This project does not use Spark but rather
+when possible the API trying to remain pythonic as much as possible. This project does not use (py)Spark but rather
 Pandas (and hopefully in the future it will support other DF implementations).
-
-
 
 Name
 ---------
 
-Jukumari (pronounced hooqumari) is the Aymara name for the spectacled bear, also known as the Andean
+Jukumari (pronounced hooqumari) is the Aymara name for the `spectacled bear <https://en.wikipedia.org/wiki/Spectacled_bear>`_, also known as the Andean
 bear, Andean short-faced bear, or mountain bear. Other names include ukumari or ukuku.
