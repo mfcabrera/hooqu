@@ -40,6 +40,7 @@ setup(
     license="Apache Software License 2.0",
     zip_safe=False,
     keywords='hooqu',
+    python_requires='>=3.7',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
