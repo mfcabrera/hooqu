@@ -108,6 +108,11 @@ We can inspect the `VerificationResult <https://github.com/mfcabrera/hooqu/blob/
     else:
           print("We found errors in the data")
 
+    for check_result in verification_result.check_results.values():
+          for cr in check_result.constraint_results:
+              if cr.status != ConstraintStatus.SUCCESS:
+                  print(f"{cr.constraint}: {cr.message}")
+
 If we run the example, we get the following output:
 
 ::
