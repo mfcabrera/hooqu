@@ -5,18 +5,15 @@ Hooqu - Unit Tests for Data
 .. image:: https://img.shields.io/pypi/v/hooqu.svg
         :target: https://pypi.python.org/pypi/hooqu
 
-.. image:: https://travis-ci.com/mfcabrera/hooqu.svg?token=pq89mpsBBBTg11hAgCHH&branch=master
+.. image:: https://travis-ci.com/mfcabrera/hooqu.svg?branch=master
         :target: https://travis-ci.org/mfcabrera/hooqu
 
 .. image:: https://readthedocs.org/projects/hooqu/badge/?version=latest
         :target: https://hooqu.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
-
 .. image:: https://pyup.io/repos/github/mfcabrera/hooqu/shield.svg
      :target: https://pyup.io/repos/github/mfcabrera/hooqu/
      :alt: Updates
-
-
 
 Hooqu is a library built on top of Pandas-like dataframes for defining "unit tests for data",
 which measure data quality datasets. Hooqu is a "spiritual" Python port of `Apache Deequ <https://github.com/awslabs/deequ/>`_
