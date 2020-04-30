@@ -5,7 +5,7 @@ Hooqu - Unit Tests for Data
 .. image:: https://img.shields.io/pypi/v/hooqu.svg
         :target: https://pypi.python.org/pypi/hooqu
 
-.. image:: https://travis-ci.com/mfcabrera/hooqu.svg?branch=master
+.. image:: https://travis-ci.com/mfcabrera/hooqu.svg?token=pq89mpsBBBTg11hAgCHH&branch=master
         :target: https://travis-ci.org/mfcabrera/hooqu
 
 .. image:: https://readthedocs.org/projects/hooqu/badge/?version=latest
