@@ -15,13 +15,6 @@ with open('requirements.txt') as f:
 with open('requirements_dev.txt') as f:
     tests_require = [l.strip() for l in f]
 
-docs_require = [
-    'Sphinx',
-    'sphinx-rtd-theme',
-    'numpydoc',
-    'sphinx-autodoc-typehints'
-]
-
 setup(
     name='hooqu',
     version='0.1.0',
@@ -48,7 +41,6 @@ setup(
     ],
     test_suite='tests',
     extras_require={
-        'testing': tests_require,
-        'docs': docs_require,
+        'testing': tests_require
     },
 )
