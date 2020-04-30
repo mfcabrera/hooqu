@@ -1,13 +1,7 @@
 Hooqu documentation
 ======================================
 
-Contents:
-
-.. toctree::
-   :maxdepth: 2
-
-   readme
-   authorshistory
+.. include:: ../README.rst
 
 Indices and tables
 ==================
