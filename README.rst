@@ -25,8 +25,11 @@ This library is currently in an experimental state and I am happy to receive fee
 * Free software: Apache Software License 2.0
 * Documentation: https://hooqu.readthedocs.io.
 
-Installation
--------------
+
+Installation and Requirements
+-------------------------------
+
+Hooqu requires Pandas >= 1.0 and Python >= 3.7. To install via pip use:
 
 ::
 
