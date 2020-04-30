@@ -1,4 +1,4 @@
-Welcome to hooqu's documentation!
+Hooqu documentation
 ======================================
 
 Contents:
