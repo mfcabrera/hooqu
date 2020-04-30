@@ -18,7 +18,8 @@ Hooqu - Unit Tests for Data
 
 
 
-Hooqu is a library built on top of Pandas-like dataframes for defining "unit tests for data", which measure data quality datasets. Hooqu is a "spiritual" Python port of `Apache Deequ <https://github.com/awslabs/deequ/>`_
+Hooqu is a library built on top of Pandas-like dataframes for defining "unit tests for data",
+which measure data quality datasets. Hooqu is a "spiritual" Python port of `Apache Deequ <https://github.com/awslabs/deequ/>`_
 
 This library is currently in an experimental state and I am happy to receive feedback and contributions.
 
