@@ -47,9 +47,19 @@ class Check:
     constraints: Tuple[Constraint, ...] = field(default_factory=tuple)
 
     def add_constraint(self, constraint: Constraint) -> "Check":
+        """
+        Returns a new Check object with the given constraint added to the
+        constraints list.
+
+        Parameters
+        -------------
+
+        constraint:
+             New constraint to be added
+        """
         return Check(self.level, self.description, self.constraints + (constraint,))
 
-    def add_filterable_constraint(
+    def _add_filterable_constraint(
         self, creation_func: Callable[[Optional[str]], Constraint]
     ) -> "CheckWithLastConstraintFilterable":
 
@@ -78,11 +88,6 @@ class Check:
 
         return analyzers
 
-    # I am implementing CheckWithLastConstraintFilterable but not sure if
-    # it is necessary
-    # Because having a Spark SQL predicate does not make a lot of sense
-    # for pandas-like dataframe
-    # however it might make sense later on
     def has_size(
         self, assertion: Callable[[int], bool], hint: Optional[str] = None
     ) -> "CheckWithLastConstraintFilterable":
@@ -94,12 +99,15 @@ class Check:
         ----------
 
         assertion:
-               Function that receives a long input parameter and returns a boolean
+               A callable that receives a long input parameter and returns a boolean.
+               The callable will receive the value of the size (number of rows)
+               and return a boolean based on whether it satisfies a condition, e.g.
+               ``lambda sz: sz > 5``.
         hint:
                A hint to provide additional context why a constraint could have failed
         """
 
-        return self.add_filterable_constraint(
+        return self._add_filterable_constraint(
             lambda filter_: size_constraint(assertion, filter_, hint)
         )
 
@@ -109,8 +117,23 @@ class Check:
         assertion: Callable[[float], bool],
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
+        """
+        Creates a constraint that asserts on the minimum of the column
 
-        return self.add_filterable_constraint(
+        Parameters
+        ----------
+
+        column:
+            Column to run the assertion on.
+
+        assertion:
+               A callable that receives a float and returns a boolean
+        hint:
+               A hint to provide additional context why a constraint could have failed
+
+        """
+
+        return self._add_filterable_constraint(
             lambda filter_: min_constraint(column, assertion, filter_, hint)
         )
 
@@ -121,14 +144,14 @@ class Check:
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
 
-        return self.add_filterable_constraint(
+        return self._add_filterable_constraint(
             lambda filter_: max_constraint(column, assertion, filter_, hint)
         )
 
     def is_complete(
         self, column: str, hint: Optional[str] = None,
     ):
-        return self.add_filterable_constraint(
+        return self._add_filterable_constraint(
             lambda filter_: completeness_constraint(column, IS_ONE, filter_, hint)
         )
 
@@ -138,7 +161,7 @@ class Check:
         assertion: Callable[[float], bool],
         hint: Optional[str] = None,
     ):
-        return self.add_filterable_constraint(
+        return self._add_filterable_constraint(
             lambda filter_: completeness_constraint(column, assertion, filter_, hint)
         )
 
@@ -149,7 +172,7 @@ class Check:
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
 
-        return self.add_filterable_constraint(
+        return self._add_filterable_constraint(
             lambda filter_: mean_constraint(column, assertion, filter_, hint)
         )
 
@@ -159,7 +182,7 @@ class Check:
         assertion: Callable[[float], bool],
         hint: Optional[str] = None,
     ):
-        return self.add_filterable_constraint(
+        return self._add_filterable_constraint(
             lambda filter_: standard_deviation_constraint(
                 column, assertion, filter_, hint
             )
@@ -171,7 +194,7 @@ class Check:
         assertion: Callable[[float], bool],
         hint: Optional[str] = None,
     ):
-        return self.add_filterable_constraint(
+        return self._add_filterable_constraint(
             lambda filter_: sum_constraint(
                 column, assertion, filter_, hint
             )
