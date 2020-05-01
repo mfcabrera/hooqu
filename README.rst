@@ -63,7 +63,7 @@ a description, a priority and a count of how often it has been viewed. Let's gen
 
 Most applications that work with data have implicit assumptions about that data, e.g., that attributes have certain types,
 do not contain NULL values, and so on. If these assumptions are violated, your application might crash or produce wrong outputs.
-The idea behind deequ is to explicitly state these assumptions in the form of a "unit-test" for data,
+The idea behind Hooqu is to explicitly state these assumptions in the form of a "unit-test" for data,
 which can be verified on a piece of data at hand. If the data has errors, we can "quarantine" and fix it, before we feed to an application.
 
 The main entry point for defining how you expect your data to look is the `VerificationSuite <https://hooqu.readthedocs.io/en/latest/hooqu.html#hooqu.verification_suite.VerificationSuite>`_ from which
