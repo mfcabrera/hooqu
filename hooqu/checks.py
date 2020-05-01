@@ -62,6 +62,10 @@ class Check:
     def _add_filterable_constraint(
         self, creation_func: Callable[[Optional[str]], Constraint]
     ) -> "CheckWithLastConstraintFilterable":
+        """
+        Adds a constraint that can subsequently be replaced
+        with a filtered version.
+        """
 
         constraint_without_filtering = creation_func(None)
         return CheckWithLastConstraintFilterable(
@@ -72,8 +76,6 @@ class Check:
         )
 
     def required_analyzers(self) -> Set[Analyzer]:
-        #   This functionality does not make a lot sense for Pandas
-        #   but for porting purposes I will support it.
 
         rc = (
             c.inner if isinstance(c, ConstraintDecorator) else c

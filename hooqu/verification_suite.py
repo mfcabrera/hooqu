@@ -95,10 +95,6 @@ class VerificationSuite:
 
         verification_result = self.evaluate(checks, analysis_result)
 
-        # I don't know why this happens if analysis_result is also AnalysisContext
-        # probably done because of the serialization?
-        # analyzer_context = AnalyzerContext(verification_result.metrics)
-
         # TODO: Save ave or append Results on the metric reposiotory
         # TODO: Save JsonOutputToFilesystemIfNecessary
 

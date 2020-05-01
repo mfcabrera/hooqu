@@ -16,7 +16,7 @@ Hooqu - Unit Tests for Data
      :alt: Updates
 
 Hooqu is a library built on top of Pandas-like dataframes for defining "unit tests for data",
-which measure data quality datasets. Hooqu is a "spiritual" Python port of `Apache Deequ <https://github.com/awslabs/deequ/>`_
+which measure data quality datasets. Hooqu is a "spiritual" Python port of `Apache Deequ <https://github.com/awslabs/deequ/>`_.
 
 This library is currently in an experimental state and I am happy to receive feedback and contributions.
 
@@ -38,7 +38,10 @@ Hooqu requires Pandas >= 1.0 and Python >= 3.7. To install via pip use:
 Example
 --------
 
-Hooqu's purpose is to "unit-test" data to find errors early, before the data gets fed to consuming systems or machine learning algorithms.
+Hooqu's purpose is to "unit-test" data to find errors early, before the data gets fed to consuming systems or machine learning algorithms. Note that "unit test" refers
+to the fact that the quality of the data is being rather than to sofware practice of unit testing.
+Hooqu is meant to be used as run-time check done during a data processing/ingestion step.
+
 In the following, we will walk you through a toy example to showcase the most basic usage of our library.
 
 Deequ works on tabular data, e.g., CSV files, database tables, logs, flattened json files, basically anything that you can fit into a Pandas-like dataframe.
@@ -64,8 +67,8 @@ do not contain NULL values, and so on. If these assumptions are violated, your a
 The idea behind deequ is to explicitly state these assumptions in the form of a "unit-test" for data,
 which can be verified on a piece of data at hand. If the data has errors, we can "quarantine" and fix it, before we feed to an application.
 
-The main entry point for defining how you expect your data to look is the `VerificationSuite <https://github.com/mfcabrera/hooqu/blob/master/hooqu/verification_suite.py>`_ from which
-you can add  `Checks <https://github.com/mfcabrera/hooqu/blob/master/hooqu/checks.py>`_ that define constraints on attributes of the data. In this example, we test for the following properties of our data:
+The main entry point for defining how you expect your data to look is the `VerificationSuite <https://hooqu.readthedocs.io/en/latest/hooqu.html#hooqu.verification_suite.VerificationSuite>`_ from which
+you can add  `Checks <https://hooqu.readthedocs.io/en/latest/hooqu.html#module-hooqu.checks>`_ that define constraints on attributes of the data. In this example, we test for the following properties of our data:
 
 - there are 5 rows in total
 - values of the id attribute are never NULL and unique
@@ -86,7 +89,7 @@ In code this looks as follows:
               Check(CheckLevel.ERROR, "Basic Check")
               .has_size(lambda sz: sz == 5)  # we expect 5 rows
               .is_complete("id")  # should never be None/Null
-              # .is_unique("id")  # should not contain dupliucatees (NOT IMPLEMENTED)
+              # .is_unique("id")  # should not contain duplicates (NOT IMPLEMENTED)
               .is_complete("productName")  # should never be None/Null
               .has_mean("numViews", lambda mean: mean <= 10)
               # .has_quantile("numViews", 0.5, lambda v: v <= 10) (NOT IMPLEMENTED)
