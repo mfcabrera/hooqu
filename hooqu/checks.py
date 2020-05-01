@@ -124,12 +124,12 @@ class Check:
         ----------
 
         column:
-            Column to run the assertion on.
+                Column to run the assertion on.
 
         assertion:
-               A callable that receives a float and returns a boolean
+                A callable that receives a float and returns a boolean
         hint:
-               A hint to provide additional context why a constraint could have failed
+                A hint to provide additional context why a constraint could have failed
 
         """
 
@@ -143,6 +143,20 @@ class Check:
         assertion: Callable[[float], bool],
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
+        """
+        Creates a constraint that asserts on the maximum of the column
+
+        Parameters
+        ----------
+
+        column:
+                Column to run the assertion on.
+        assertion:
+                A callable that receives a float and returns a boolean
+        hint:
+                A hint to provide additional context why a constraint could have failed
+
+        """
 
         return self._add_filterable_constraint(
             lambda filter_: max_constraint(column, assertion, filter_, hint)
@@ -150,7 +164,17 @@ class Check:
 
     def is_complete(
         self, column: str, hint: Optional[str] = None,
-    ):
+    ) -> "CheckWithLastConstraintFilterable":
+        """
+        Creates a constraint that asserts on a column completion.
+
+        Parameters
+        ----------
+
+        column:
+                Column to run the assertion on.
+
+        """
         return self._add_filterable_constraint(
             lambda filter_: completeness_constraint(column, IS_ONE, filter_, hint)
         )
@@ -160,7 +184,21 @@ class Check:
         column: str,
         assertion: Callable[[float], bool],
         hint: Optional[str] = None,
-    ):
+    ) -> "CheckWithLastConstraintFilterable":
+        """
+        Creates a constraint that asserts on a column completion
+
+        Parameters
+        ----------
+
+        column:
+                Column to run the assertion on.
+        assertion:
+                A callable that receives a float and returns a boolean
+        hint:
+                A hint to provide additional context why a constraint could have failed
+
+        """
         return self._add_filterable_constraint(
             lambda filter_: completeness_constraint(column, assertion, filter_, hint)
         )
@@ -171,6 +209,21 @@ class Check:
         assertion: Callable[[float], bool],
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
+        """
+
+        Creates a constraint that asserts on the mean of the column.
+
+        Parameters
+        ----------
+
+        column:
+                Column to run the assertion on.
+        assertion:
+                A callable that receives a float and returns a boolean
+        hint:
+                A hint to provide additional context why a constraint could have failed
+
+        """
 
         return self._add_filterable_constraint(
             lambda filter_: mean_constraint(column, assertion, filter_, hint)
@@ -181,7 +234,25 @@ class Check:
         column: str,
         assertion: Callable[[float], bool],
         hint: Optional[str] = None,
-    ):
+    ) -> "CheckWithLastConstraintFilterable":
+        """
+
+        Creates a constraint that asserts on the standard deviation of the column.
+        Note that unlike pandas this calculate the population variance
+        i.e. degree of freedom (ddof=0). NaNs are ignored when performing the
+        calculation.
+
+        Parameters
+        ----------
+
+        column:
+                Column to run the assertion on.
+        assertion:
+                A callable that receives a float and returns a boolean
+        hint:
+                A hint to provide additional context why a constraint could have failed
+
+        """
         return self._add_filterable_constraint(
             lambda filter_: standard_deviation_constraint(
                 column, assertion, filter_, hint
@@ -193,15 +264,40 @@ class Check:
         column: str,
         assertion: Callable[[float], bool],
         hint: Optional[str] = None,
-    ):
+    ) -> "CheckWithLastConstraintFilterable":
+        """
+
+        Creates a constraint that asserts on the sum of the column.
+
+
+        Parameters
+        ----------
+
+        column:
+                Column to run the assertion on.
+        assertion:
+                A callable that receives a float and returns a boolean
+        hint:
+                A hint to provide additional context why a constraint could have failed
+
+        """
         return self._add_filterable_constraint(
             lambda filter_: sum_constraint(
                 column, assertion, filter_, hint
             )
         )
 
-    def evaluate(self, context: AnalyzerContext):
-        #  Evaluate all the constraints
+    def evaluate(self, context: AnalyzerContext) -> CheckResult:
+        """
+        Evaluate this check on computed metrics
+
+        Parameters
+        ----------
+
+        context:
+            result of the metrics computation
+
+        """
         constraint_results = [c.evaluate(context.metric_map) for c in self.constraints]
         any_failures: bool = any(
             (c.status == ConstraintStatus.FAILURE for c in constraint_results)

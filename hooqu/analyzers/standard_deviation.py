@@ -42,7 +42,10 @@ class StandardDeviationState(DoubledValuedState):
 class StandardDeviation(StandardScanShareableAnalyzer[StandardDeviationState]):
     """
     Calculate the population standard deviation (degrees of freedom = 0) on the
-    specified column. xNaN are ignored in the calculations.
+    specified column. NaNs are ignored in the calculations.
+
+    Note that unlike pandas this calculate the population variance
+    i.e. degree of freedom (ddof=0)
     """
 
     def __init__(self, column: str, where: Optional[str] = None):
