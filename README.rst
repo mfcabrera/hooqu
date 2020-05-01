@@ -43,8 +43,7 @@ to the fact that the quality of the data is being rather than to sofware practic
 Hooqu is meant to be used as run-time check done during a data processing/ingestion step.
 
 In the following, we will walk you through a toy example to showcase the most basic usage of our library.
-
-Deequ works on tabular data, e.g., CSV files, database tables, logs, flattened json files, basically anything that you can fit into a Pandas-like dataframe.
+Hooqu works on tabular data, e.g., CSV files, database tables, logs, flattened json files, basically anything that you can fit into a Pandas dataframe.
 For this example, we assume that we work on some kind of Item data, where every item has an id, a productName,
 a description, a priority and a count of how often it has been viewed. Let's generate a toy example with few records:
 
