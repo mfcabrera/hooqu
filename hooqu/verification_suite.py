@@ -31,7 +31,7 @@ class VerificationRunBuilder:
     # but let's keep it like this for API compatability
     def run(self) -> VerificationResult:
 
-        return VerificationSuite().do_verifiation_run(
+        return VerificationSuite().do_verification_run(
             self.data, self._checks, self._required_analyzers, None, None, None, None,
         )
 
@@ -46,7 +46,7 @@ class VerificationSuite:
     def on_data(self, data):
         return VerificationRunBuilder(data)
 
-    def do_verifiation_run(
+    def do_verification_run(
         self,
         data,
         checks: Sequence[Check],
