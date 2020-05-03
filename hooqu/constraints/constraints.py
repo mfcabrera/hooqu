@@ -8,6 +8,7 @@ from hooqu.analyzers import (
     Size,
     StandardDeviation,
     Sum,
+    Quantile
 )
 from hooqu.constraints.analysis_based_constraint import AnalysisBasedConstraint
 from hooqu.constraints.constraint import Constraint, NamedConstraint
@@ -104,3 +105,17 @@ def standard_deviation_constraint(
     constraint = AnalysisBasedConstraint(std, assertion, hint)
 
     return NamedConstraint(constraint, f"StandardDeviationConstraint({std})")
+
+
+def quantile_constraint(
+    column: str,
+    quantile: float,
+    assertion: Callable[[float], bool],
+    where: Optional[str] = None,
+    hint: Optional[str] = None,
+) -> Constraint:
+
+    quant = Quantile(column, quantile, where)
+    constraint = AnalysisBasedConstraint(quant, assertion, hint)
+
+    return NamedConstraint(constraint, f"QuantileConstraint({quant})")

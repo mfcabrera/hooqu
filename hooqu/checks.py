@@ -16,6 +16,7 @@ from hooqu.constraints import (
     size_constraint,
     standard_deviation_constraint,
     sum_constraint,
+    quantile_constraint,
 )
 from hooqu.constraints.constraint import ConstraintStatus
 
@@ -286,6 +287,34 @@ class Check:
         return self._add_filterable_constraint(
             lambda filter_: sum_constraint(
                 column, assertion, filter_, hint
+            )
+        )
+
+    def has_quantile(
+        self,
+        column: str,
+        quantile: float,
+        assertion: Callable[[float], bool],
+        hint: Optional[str] = None,
+    ) -> "CheckWithLastConstraintFilterable":
+        """
+
+        Creates a constraint that asserts on the quantile of the column.
+
+        Parameters
+        ----------
+
+        column:
+                Column to run the assertion on.
+        assertion:
+                A callable that receives a float and returns a boolean
+        hint:
+                A hint to provide additional context why a constraint could have failed
+
+        """
+        return self._add_filterable_constraint(
+            lambda filter_: quantile_constraint(
+                column, quantile, assertion, filter_, hint
             )
         )
 

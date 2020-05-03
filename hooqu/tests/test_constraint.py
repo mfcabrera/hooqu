@@ -6,6 +6,7 @@ from hooqu.constraints import (
     size_constraint,
     standard_deviation_constraint,
     sum_constraint,
+    quantile_constraint,
 )
 from hooqu.constraints.constraint import (
     Constraint,
@@ -75,6 +76,10 @@ def test_basic_stats_constraints(df_with_numeric_values):
         calculate(
             standard_deviation_constraint("att1", lambda v: v == 1.707825127659933), df
         ).status
+        == ConstraintStatus.SUCCESS
+    )
+    assert (
+        calculate(quantile_constraint("att1", 0.5, lambda v: v == 3.0), df).status
         == ConstraintStatus.SUCCESS
     )
 

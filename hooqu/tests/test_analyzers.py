@@ -1,6 +1,8 @@
 import math
+
 import numpy as np
 import pandas as pd
+import pytest
 from hypothesis import example, given
 from tryingsnake import Failure, Success
 
@@ -9,6 +11,7 @@ from hooqu.analyzers import (
     Maximum,
     Mean,
     Minimum,
+    Quantile,
     Size,
     StandardDeviation,
     Sum,
@@ -208,3 +211,22 @@ class TestCompletenessAnalyzer:
         assert result == DoubleMetric(
             Entity.COLUMN, "Completeness", "att1", Success(1.0)
         )
+
+
+class TestQuantileAnalyzer:
+
+    @pytest.mark.parametrize("q", [-0.1, 1.1, 100])
+    def test_fail_for_invalid_values_of_q(self, df_with_numeric_values, q):
+        df = df_with_numeric_values
+        value = Quantile("att1", quantile=q).calculate(df).value
+        assert value.isFailure
+        ex = value.failed().get()
+
+        assert "percentiles should all be in the interval [0, 1]" in str(ex)
+
+    @pytest.mark.parametrize("q, expected", [(0.5, 0.0), (0.25, -500.0), (0.75, 500)])
+    def test_correctly_computes_quantile(self, q, expected):
+        df = pd.DataFrame({"att1": range(-1000, 1001)})
+
+        result = Quantile("att1", q).calculate(df).value.get()
+        assert result == expected

@@ -4,6 +4,7 @@ serve as an interface to specific implementation of dataframes. For now the supp
 is focused solely on Pandas.
 """
 from functools import partial
+from typing import Callable
 
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
@@ -76,3 +77,25 @@ def pop_variance(series):
     avg = series.mean()
     m2 = (series - avg).pow(2).sum()
     return n, avg, m2
+
+
+def quantile_aggregation(quantile: float) -> Callable[[pd.Series], float]:
+    """
+    Calculates the quantile of the column using Panda's Series quantile function.
+    Note that this calculate the population quantile, that is it returns the closet
+    value of the data for the specified quantile.
+
+    Parameters
+    ----------
+
+    quantile:
+        The quantile to calculate, must be in the interval [0, 1],
+        where 0.5 would be the median.
+
+    """
+
+    def quantile_agg(series):
+        return series.quantile(quantile, interpolation="nearest")
+    f = quantile_agg
+    f.__name__ = "quantile_aggregation"
+    return f

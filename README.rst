@@ -91,7 +91,7 @@ In code this looks as follows:
               # .is_unique("id")  # should not contain duplicates (NOT IMPLEMENTED)
               .is_complete("productName")  # should never be None/Null
               .has_mean("numViews", lambda mean: mean <= 10)
-              # .has_quantile("numViews", 0.5, lambda v: v <= 10) (NOT IMPLEMENTED)
+              .has_quantile("numViews", 0.5, lambda v: v <= 10)
               # .contains_url("description", lambda d: d >= 0.5) (NOT IMPLEMENTED)
           )
           .run()
@@ -142,5 +142,5 @@ Pandas (and hopefully in the future it will support other DF implementations).
 Name
 ---------
 
-Jukumari (pronounced hooqumari) is the Aymara name for the `spectacled bear <https://en.wikipedia.org/wiki/Spectacled_bear>`_, also known as the Andean
-bear, Andean short-faced bear, or mountain bear. Other names include ukumari or ukuku.
+Jukumari (pronounced hooqumari) is the Aymara name for the `spectacled bear <https://en.wikipedia.org/wiki/Spectacled_bear>`_ (Tremarctos ornatus), also known as the Andean
+bear, Andean short-faced bear, or mountain bear.

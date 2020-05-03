@@ -1,4 +1,4 @@
-from hooqu.analyzers import Maximum, Mean, Minimum, StandardDeviation, Sum
+from hooqu.analyzers import Maximum, Mean, Minimum, Quantile, StandardDeviation, Sum
 from hooqu.analyzers.runners import AnalyzerContext
 from hooqu.analyzers.runners.analysis_runner import do_analysis_run
 from hooqu.checks import Check, CheckLevel, CheckStatus
@@ -66,6 +66,7 @@ class TestChecksOnBasicStats:
             Mean("att1"),
             StandardDeviation("att1"),
             Sum("att1"),
+            Quantile("att1", 0.5),
         ]
 
         context_numeric = do_analysis_run(df, analyzers)
@@ -85,6 +86,9 @@ class TestChecksOnBasicStats:
         )
         assert is_success(
             base_check.has_sum("att1", lambda v: v == 21.0), context_numeric
+        )
+        assert is_success(
+            base_check.has_quantile("att1", 0.5, lambda v: v == 3.0), context_numeric
         )
 
     def test_correctly_evaluate_mean_constraints(self, df_with_numeric_values):
