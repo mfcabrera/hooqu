@@ -88,11 +88,12 @@ In code this looks as follows:
               Check(CheckLevel.ERROR, "Basic Check")
               .has_size(lambda sz: sz == 5)  # we expect 5 rows
               .is_complete("id")  # should never be None/Null
-              # .is_unique("id")  # should not contain duplicates (NOT IMPLEMENTED)
+              # .is_unique("id")  # should not contain duplicates (NOT YET IMPLEMENTED)
               .is_complete("productName")  # should never be None/Null
+              # .is_contained_in("priority", ("high", "low")) (NOT YET IMPLEMENTED)
               .has_mean("numViews", lambda mean: mean <= 10)
               .has_quantile("numViews", 0.5, lambda v: v <= 10)
-              # .contains_url("description", lambda d: d >= 0.5) (NOT IMPLEMENTED)
+              # .contains_url("description", lambda d: d >= 0.5) (NOT YET IMPLEMENTED)
           )
           .run()
     )
