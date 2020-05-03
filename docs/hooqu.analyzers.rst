@@ -27,14 +27,6 @@ hooqu.analyzers.completeness module
    :undoc-members:
    :show-inheritance:
 
-hooqu.analyzers.grouping\_analyzer module
------------------------------------------
-
-.. automodule:: hooqu.analyzers.grouping_analyzer
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 hooqu.analyzers.maximum module
 ------------------------------
 
@@ -63,6 +55,14 @@ hooqu.analyzers.preconditions module
 ------------------------------------
 
 .. automodule:: hooqu.analyzers.preconditions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+hooqu.analyzers.quantile module
+-------------------------------
+
+.. automodule:: hooqu.analyzers.quantile
    :members:
    :undoc-members:
    :show-inheritance:

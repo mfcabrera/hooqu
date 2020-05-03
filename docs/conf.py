@@ -51,7 +51,9 @@ extensions = [
     'sphinx_autodoc_typehints',
 ]
 
+
 numpydoc_class_members_toctree = False
+napoleon_include_init_with_doc = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -284,3 +286,18 @@ texinfo_documents = [
 
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
+
+
+# def autodoc_skip_member(app, what, name, obj, skip, options):
+#     exclusions = ('__weakref__',  # special-members
+#                   '__doc__', '__module__', '__dict__',  # undoc-members
+#                   )
+#     exclude = name in exclusions
+#     if name == "__init__" and obj.__doc__:
+#         return False
+
+#     return skip or exclude
+
+
+# def setup(app):
+#     app.connect('autodoc-skip-member', autodoc_skip_member)
