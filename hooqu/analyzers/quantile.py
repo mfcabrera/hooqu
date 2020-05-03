@@ -31,7 +31,7 @@ class Quantile(StandardScanShareableAnalyzer[QuantileState]):
         Column in DataFrame for which the quantile is analyzed.
 
     quantile:
-        Computed Quantile. Must be in the interval [0, 1], where 0.5 would be thee
+        Computed Quantile. Must be in the interval [0, 1], where 0.5 would be the
         median.
 
     where:
