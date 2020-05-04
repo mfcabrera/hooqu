@@ -163,23 +163,6 @@ class ScanShareableAnalyzer(Analyzer, Generic[S]):
         """
         pass
 
-    def _aggregation_functions_names(self):
-        aggs = self._aggregation_functions()
-
-        if isinstance(aggs, dict):
-            funcs = list(aggs.values())
-        else:
-            funcs = list(aggs)
-
-        names: List[str] = []
-        for f in funcs:
-            if isinstance(f, str):
-                names.append(f)
-            elif callable(f):
-                names.append(f.__name__)
-            else:
-                raise ValueError("Invalid aggregation type")
-
     @abstractmethod
     def from_aggregation_result(self, result, offset) -> Optional[S]:
         pass
