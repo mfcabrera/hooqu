@@ -70,12 +70,12 @@ The main entry point for defining how you expect your data to look is the `Verif
 you can add  `Checks <https://hooqu.readthedocs.io/en/latest/hooqu.html#module-hooqu.checks>`_ that define constraints on attributes of the data. In this example, we test for the following properties of our data:
 
 - there are 5 rows in total
-- values of the id attribute are never NULL and unique
-- values of the productName attribute are never NULL
+- values of the id attribute are never Null/None and unique
+- values of the productName attribute are never null/None
 - the priority attribute can only contain "high" or "low" as value
 - numViews should not contain negative values
 - at least half of the values in description should contain a url
-- the mean of numViews should be less than or equal to 10
+- the median of numViews should be less than or equal to 10
 
 In code this looks as follows:
 
@@ -91,9 +91,10 @@ In code this looks as follows:
               # .is_unique("id")  # should not contain duplicates (NOT YET IMPLEMENTED)
               .is_complete("productName")  # should never be None/Null
               # .is_contained_in("priority", ("high", "low")) (NOT YET IMPLEMENTED)
-              .has_mean("numViews", lambda mean: mean <= 10)
-              .has_quantile("numViews", 0.5, lambda v: v <= 10)
+              # .is_non_negative("nunViews") (NOT YET IMPLEMENTED)
               # .contains_url("description", lambda d: d >= 0.5) (NOT YET IMPLEMENTED)
+              .has_quantile("numViews", 0.5, lambda v: v <= 10)
+
           )
           .run()
     )
