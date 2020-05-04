@@ -293,28 +293,32 @@ class Check:
     def has_quantile(
         self,
         column: str,
-        quantile: float,
+        q: float,
         assertion: Callable[[float], bool],
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
         """
 
         Creates a constraint that asserts on the quantile of the column.
+        Note that the quantile calculation is done using the "nearest" interpolation,
+        meaning that the closest value of the column ``column`` is returned
 
         Parameters
         ----------
 
         column:
-                Column to run the assertion on.
+            Column to run the assertion on.
+        q:
+            The q-th quantile to calculate which must be between 0 and 1 inclusive.
         assertion:
-                A callable that receives a float and returns a boolean
+            A callable that receives a float and returns a boolean
         hint:
-                A hint to provide additional context why a constraint could have failed
+            A hint to provide additional context why a constraint could have failed
 
         """
         return self._add_filterable_constraint(
             lambda filter_: quantile_constraint(
-                column, quantile, assertion, filter_, hint
+                column, q, assertion, filter_, hint
             )
         )
 
@@ -344,7 +348,6 @@ class Check:
         return CheckResult(self, check_status, constraint_results)
 
 
-# FIXME: Move somewhere else?
 class CheckWithLastConstraintFilterable(Check):
     def __init__(
         self,
