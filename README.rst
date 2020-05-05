@@ -21,7 +21,13 @@ which measure data quality datasets. Hooqu is a "spiritual" Python port of `Apac
 This library is currently in an experimental state and I am happy to receive feedback and contributions.
 
 * Free software: Apache Software License 2.0
-* Documentation: https://hooqu.readthedocs.io.
+
+
+Documentation
+-------------
+
+
+The documentation is hosted at https://hooqu.readthedocs.io.
 
 
 Installation and Requirements
@@ -34,12 +40,17 @@ Hooqu requires Pandas >= 1.0 and Python >= 3.7. To install via pip use:
    pip install hooqu
 
 
+Code
+-------------------------------
+
+The code and issue tracker are hosted on GitHub: https://github.com/mfcabrera/hooqu/
+
 
 Example
 --------
 
 Hooqu's purpose is to "unit-test" data to find errors early, before the data gets fed to consuming systems or machine learning algorithms. Note that "unit test" refers
-to the fact that the quality of the data is being rather than to sofware practice of unit testing.
+to the fact that the quality of the data is being tested rather than to the sofware practice of unit testing.
 Hooqu is meant to be used as run-time check done during a data processing/ingestion step.
 
 In the following, we will walk you through a toy example to showcase the most basic usage of our library.
@@ -128,6 +139,11 @@ The test found that our assumptions are violated! Only 4 out of 5 (80%) of the v
 Fortunately, we ran a test and found the errors, somebody should immediately fix the data :)
 
 
+Features
+--------
+
+TODO
+
 More Examples
 -------------
 
@@ -137,9 +153,10 @@ TODO
 References
 -----------
 
-This project is a "spiritual" port of `Apache Deequ <https://github.com/awslabs/deequ/>`_ and thus tries to emulate
-when possible the API trying to remain pythonic as much as possible. This project does not use (py)Spark but rather
-Pandas (and hopefully in the future it will support other DF implementations).
+This project is a "spiritual" port of `Apache Deequ <https://github.com/awslabs/deequ/>`_ and thus tries to implement
+the declarative API described on the paper "`Automating large-scale data quality verification <http://www.vldb.org/pvldb/vol11/p1781-schelter.pdf>`_"
+while trying to remain pythonic as much as possible. This project does not use (py)Spark but rather
+Pandas (and hopefully in the future it will support other compatible dataframe implementations).
 
 Name
 ---------
