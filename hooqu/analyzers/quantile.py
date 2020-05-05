@@ -10,13 +10,15 @@ from hooqu.dataframe import DataFrame, quantile_aggregation
 @dataclass
 class QuantileState(DoubledValuedState):
 
-    min_value: float
+    quantile: float
 
     def sum(self, other: "QuantileState"):
-        return min(self.min_value, other.min_value)
+        # FIXME: We probably need to reimplement the whole computation
+        # if we want to support this
+        raise NotImplementedError("sum for quantile state not implemented")
 
     def metric_value(self):
-        return self.min_value
+        return self.quantile
 
 
 class Quantile(StandardScanShareableAnalyzer[QuantileState]):
