@@ -1,14 +1,22 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import (Callable, Generic, List, Mapping, Optional, Sequence, Set,
-                    TypeVar, Union)
+from typing import (
+    Callable,
+    Generic,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Set,
+    TypeVar,
+    Union,
+)
 
 from tryingsnake import Failure, Success
 
 from hooqu.dataframe import DataFrame
 from hooqu.metrics import DoubleMetric, Entity, Metric
 
-S = TypeVar("S")
 
 AggDefinition = Mapping[str, Set[Union[str, Callable]]]
 
@@ -22,14 +30,21 @@ class EmptyStateException(MetricCalculationException):
     pass
 
 
+S = TypeVar("S")
+M = TypeVar("M", bound=Metric)
+
+
 class State(ABC, Generic[S]):
     @abstractmethod
-    def sum(self, other: S):
+    def sum(self, other: S) -> S:
         # TODO: check type state
         pass
 
+    def __add__(self, other: S) -> S:
+        return self.sum(other)
 
-class DoubledValuedState(State[S]):
+
+class DoubledValuedState(State, Generic[S]):
     @abstractmethod
     def metric_value(self,) -> float:
         pass
@@ -37,22 +52,22 @@ class DoubledValuedState(State[S]):
 
 # Analyzer module
 @dataclass(frozen=True)  # type: ignore
-class Analyzer(ABC):
+class Analyzer(ABC, Generic[S, M]):
     name: str
     instance: str
     entity: Entity = Entity.COLUMN
     where: Optional[str] = None
 
     @abstractmethod
-    def compute_state_from(self, data: DataFrame):
+    def compute_state_from(self, data: DataFrame) -> Optional[S]:
         pass
 
     @abstractmethod
-    def compute_metric_from(self, state):
+    def compute_metric_from(self, state) -> M:
         pass
 
     @abstractmethod
-    def to_failure_metric(self, ex: Exception) -> Metric:
+    def to_failure_metric(self, ex: Exception) -> M:
         pass
 
     def preconditions(self) -> List[Callable[[DataFrame], None]]:
@@ -63,7 +78,7 @@ class Analyzer(ABC):
 
     def calculate(
         self, data: DataFrame, aggregate_with=None, save_states_with=None
-    ) -> Metric:
+    ) -> M:
         """
         Runs preconditions, calculates and returns the metric
 
@@ -98,7 +113,7 @@ class Analyzer(ABC):
 
         return self.calculate_metric(state, aggregate_with, save_states_with)
 
-    def calculate_metric(self, state, aggregate_with, save_states_with) -> Metric:
+    def calculate_metric(self, state, aggregate_with, save_states_with) -> M:
         # TODO: deal with state
         # TODO: deal with aggregate_with
 
@@ -131,12 +146,13 @@ class Analyzer(ABC):
         return f"{self.name}({self.instance})"
 
 
-class NonScanAnalyzer(Analyzer, Generic[S]):
+class NonScanAnalyzer(Analyzer[S, DoubleMetric]):
     """Analyzer that does not need to run any aggregation and can extract
     the information straight from the dataframe. This is a special
     implementation of Hooqu
     for the Size Analyzer.
     """
+
     def compute_metric_from(self, state=None) -> DoubleMetric:
         if state is not None:
             return metric_from_value(
@@ -150,7 +166,7 @@ class NonScanAnalyzer(Analyzer, Generic[S]):
         return metric_from_failure(ex, self.name, self.instance, self.entity)
 
 
-class ScanShareableAnalyzer(Analyzer, Generic[S]):
+class ScanShareableAnalyzer(Analyzer[S, M]):
     """An analyzer that runs a set of aggregation functions over the data,
     can share scans over the data """
 
@@ -175,7 +191,9 @@ class ScanShareableAnalyzer(Analyzer, Generic[S]):
         return self.calculate_metric(state, aggregate_with, save_states_with)
 
 
-class StandardScanShareableAnalyzer(ScanShareableAnalyzer, Generic[S]):
+class StandardScanShareableAnalyzer(
+    ScanShareableAnalyzer[S, DoubleMetric]
+):
     @abstractmethod
     def _aggregation_functions(self) -> Sequence[str]:
         pass
@@ -197,7 +215,7 @@ class StandardScanShareableAnalyzer(ScanShareableAnalyzer, Generic[S]):
         else:
             return metric_from_empty(self, self.name, self.instance, self.entity)
 
-    def compute_state_from(self, data: DataFrame) -> Optional[DoubledValuedState]:
+    def compute_state_from(self, data: DataFrame) -> Optional[S]:
         # first get what aggregations we need to perform on the raw dataframe
         # note: no groupby here so results per column
 

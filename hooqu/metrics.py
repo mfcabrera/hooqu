@@ -11,17 +11,17 @@ class Entity(Enum):
     MULTICOLUMN = 2
 
 
-M = TypeVar("M")
+T = TypeVar("T")
 
 
 @dataclass(frozen=True)
-class Metric(Generic[M]):
+class Metric(Generic[T]):
     entity: Entity
     name: str
     instance: str
     value: Try_
 
-    def flatten(self) -> Sequence["Metric[M]"]:
+    def flatten(self) -> Sequence["Metric[T]"]:
         pass
 
     # This would replace simplifiedMetricOutput
