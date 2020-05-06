@@ -12,7 +12,7 @@ class QuantileState(DoubledValuedState):
 
     quantile: float
 
-    def sum(self, other: "QuantileState"):
+    def sum(self, other: "QuantileState") -> "QuantileState":
         # FIXME: We probably need to reimplement the whole computation
         # if we want to support this
         raise NotImplementedError("sum for quantile state not implemented")
@@ -54,7 +54,8 @@ class Quantile(StandardScanShareableAnalyzer[QuantileState]):
         return QuantileState(value)
 
     def _aggregation_functions(self, where: Optional[str] = None) -> AggDefinition:
-
+        # this implementation uses pandas quantile underneath
+        # so it is not yet parallelizable
         return {self.instance: [quantile_aggregation(self.quantile)]}
 
     def additional_preconditions(self) -> List[Callable[[DataFrame], None]]:

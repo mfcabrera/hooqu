@@ -8,7 +8,7 @@ from hooqu.dataframe import DataFrame
 
 
 @dataclass
-class SumState(DoubledValuedState):
+class SumState(DoubledValuedState["SumState"]):
 
     sum_value: float
 

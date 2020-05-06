@@ -9,13 +9,13 @@ from hooqu.dataframe import DataFrame, pop_variance
 
 
 @dataclass
-class StandardDeviationState(DoubledValuedState):
+class StandardDeviationState(DoubledValuedState["StandardDeviationState"]):
 
     n: float
     avg: float
     m2: float
 
-    def sum(self, other: "StandardDeviationState"):
+    def sum(self, other: "StandardDeviationState") -> "StandardDeviationState":
         new_n = self.n + other.n
         delta = other.avg - self.avg
         delta_n = 0.0 if new_n == 0.0 else delta / new_n

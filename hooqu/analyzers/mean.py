@@ -8,12 +8,12 @@ from hooqu.dataframe import DataFrame
 
 
 @dataclass
-class MeanState(DoubledValuedState):
+class MeanState(DoubledValuedState["MeanState"]):
 
     total: float
     count: int
 
-    def sum(self, other: "MeanState"):
+    def sum(self, other: "MeanState") -> "MeanState":
         return MeanState(self.total + other.total, self.count + other.count)
 
     def metric_value(self) -> float:

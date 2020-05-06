@@ -8,7 +8,7 @@ from hooqu.dataframe import DataFrame
 
 
 @dataclass
-class MinState(DoubledValuedState):
+class MinState(DoubledValuedState["MinState"]):
 
     min_value: float
 

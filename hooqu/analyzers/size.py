@@ -10,11 +10,11 @@ from hooqu.dataframe import DataFrame
 
 
 @dataclass
-class NumMatches(DoubledValuedState):
+class NumMatches(DoubledValuedState["NumMatches"]):
 
     num_matches: int
 
-    def sum(self, other):
+    def sum(self, other) -> "NumMatches":
         return self.num_matches + other.num_matches
 
     def metric_value(self):

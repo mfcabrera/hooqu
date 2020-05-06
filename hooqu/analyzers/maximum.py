@@ -8,7 +8,7 @@ from hooqu.dataframe import DataFrame
 
 
 @dataclass
-class MaxState(DoubledValuedState):
+class MaxState(DoubledValuedState["MaxState"]):
 
     max_value: float
 
