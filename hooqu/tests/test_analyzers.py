@@ -8,6 +8,7 @@ from tryingsnake import Failure, Success
 
 from hooqu.analyzers import (
     Completeness,
+    Compliance,
     Maximum,
     Mean,
     Minimum,
@@ -214,7 +215,6 @@ class TestCompletenessAnalyzer:
 
 
 class TestQuantileAnalyzer:
-
     @pytest.mark.parametrize("q", [-0.1, 1.1, 100])
     def test_fail_for_invalid_values_of_q(self, df_with_numeric_values, q):
         df = df_with_numeric_values
@@ -230,3 +230,28 @@ class TestQuantileAnalyzer:
 
         result = Quantile("att1", q).calculate(df).value.get()
         assert result == expected
+
+
+class TestComplianceAnalyzer:
+    def test_compute_correct_metrics(self, df_with_numeric_values):
+        df = df_with_numeric_values
+
+        assert Compliance("rule1", "att1 > 3").calculate(df) == DoubleMetric(
+            Entity.COLUMN, "Compliance", "rule1", Success(3.0 / 6.0)
+        )
+
+        assert Compliance("rule2", "att1 > 2").calculate(df) == DoubleMetric(
+            Entity.COLUMN, "Compliance", "rule2", Success(4.0 / 6.0)
+        )
+
+    def test_compute_correct_metric_with_filtering(self, df_with_numeric_values):
+        df = df_with_numeric_values
+        result = Compliance("rule1", "att2 == 0", "att1 < 4").calculate(df)
+        assert result == DoubleMetric(
+            Entity.COLUMN, "Compliance", "rule1", Success(1.0)
+        )
+
+    def test_fail_on_wron_column_input(self, df_with_numeric_values):
+        df = df_with_numeric_values
+        result = Compliance("rule1", "attNoSuchColumn").calculate(df)
+        assert result.value.isFailure
