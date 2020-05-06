@@ -1,12 +1,13 @@
 from hooqu.constraints import (
     completeness_constraint,
+    compliance_constraint,
     max_constraint,
     mean_constraint,
     min_constraint,
+    quantile_constraint,
     size_constraint,
     standard_deviation_constraint,
     sum_constraint,
-    quantile_constraint,
 )
 from hooqu.constraints.constraint import (
     Constraint,
@@ -89,4 +90,20 @@ def test_size_constraint(df_missing):
     assert (
         calculate(size_constraint(lambda v: v == len(df)), df).status
         == ConstraintStatus.SUCCESS
+    )
+
+
+def test_compliance_constraint(df_with_numeric_values):
+    df = df_with_numeric_values
+    assert (
+        calculate(
+            compliance_constraint("rule1", "att1 > 2 ", lambda pct: pct >= 0.6), df
+        ).status
+        == ConstraintStatus.SUCCESS
+    )
+    assert (
+        calculate(
+            compliance_constraint("rule1", "att1 > 2 ", lambda pct: pct >= 0.9), df
+        ).status
+        == ConstraintStatus.FAILURE
     )

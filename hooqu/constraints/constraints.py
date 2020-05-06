@@ -8,7 +8,8 @@ from hooqu.analyzers import (
     Size,
     StandardDeviation,
     Sum,
-    Quantile
+    Quantile,
+    Compliance,
 )
 from hooqu.constraints.analysis_based_constraint import AnalysisBasedConstraint
 from hooqu.constraints.constraint import Constraint, NamedConstraint
@@ -119,3 +120,34 @@ def quantile_constraint(
     constraint = AnalysisBasedConstraint(quant, assertion, hint)
 
     return NamedConstraint(constraint, f"QuantileConstraint({quant})")
+
+
+def compliance_constraint(
+        name: str,
+        column: str,
+        assertion: Callable[[float], bool],
+        where: Optional[str] = None,
+        hint: Optional[str] = None
+) -> Constraint:
+    """
+    Runs given the expression on the given column(s) and executes the assertion
+
+    Parameters:
+    ---------
+    name:
+        A name that summarizes the check being made. This name is being used to name the
+        metrics for the analysis being done.
+    column:
+        The column expression to be evaluated.
+    assertion:
+        Callable that receives a float input parameter and returns a boolean
+    where:
+        Additional filter to apply before the analyzer is run.
+    hint:
+         A hint to provide additional context why a constraint could have failed
+
+    """
+    compliance = Compliance(name, column, where)
+    constraint = AnalysisBasedConstraint(compliance, assertion, hint)
+
+    return NamedConstraint(constraint, "ComplianceConstraint({compliance})")

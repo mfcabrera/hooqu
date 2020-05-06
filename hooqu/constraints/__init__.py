@@ -16,3 +16,4 @@ from hooqu.constraints.constraints import size_constraint  # noqa: F401
 from hooqu.constraints.constraints import standard_deviation_constraint  # noqa: F401
 from hooqu.constraints.constraints import sum_constraint  # noqa: F401
 from hooqu.constraints.constraints import quantile_constraint  # noqa: F401
+from hooqu.constraints.constraints import compliance_constraint  # noqa: F401
