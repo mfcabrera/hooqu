@@ -126,3 +126,70 @@ class TestChecksOnBasicStats:
         assert_evals_to(check3, context, CheckStatus.ERROR)
         assert_evals_to(check4, context, CheckStatus.WARNING)
         assert_evals_to(check5, context, CheckStatus.SUCCESS)
+
+
+class TestSatifiesCheck:
+    def test_return_correct_check_status_for_col_constraints(
+        self, df_with_numeric_values
+    ):
+
+        df = df_with_numeric_values
+
+        check1 = Check(CheckLevel.ERROR, "group-1").satisfies("att1 > 0", "rule1")
+
+        check2 = Check(CheckLevel.ERROR, "group-2-to-fail").satisfies(
+            "att1 > 3", "rule2"
+        )
+
+        check3 = Check(CheckLevel.ERROR, "group-2-to-succeed").satisfies(
+            "att1 > 3", "rule3", lambda v: v == 0.5
+        )
+
+        context = run_checks(df, check1, check2, check3)
+
+        assert_evals_to(check1, context, CheckStatus.SUCCESS)
+        assert_evals_to(check2, context, CheckStatus.ERROR)
+        assert_evals_to(check3, context, CheckStatus.SUCCESS)
+
+    def test_return_correct_check_status_for_col_constraints_with_cond(
+        self, df_with_numeric_values
+    ):
+
+        df = df_with_numeric_values
+
+        check_succeed = (
+            Check(CheckLevel.ERROR, "group-1")
+            .satisfies("att1 < att2", "rule1")
+            .where("att1 > 3")
+        )
+
+        check_fail = (
+            Check(CheckLevel.ERROR, "group-1")
+            .satisfies("att2 > 0", "rule2")
+            .where("att1 > 0")
+        )
+
+        check_partially_satisfied = (
+            Check(CheckLevel.ERROR, "group-1")
+            .satisfies("att2 > 0", "rule3", lambda v: v == 0.5)
+            .where("att1 > 0")
+        )
+
+        context = run_checks(df, check_succeed, check_fail, check_partially_satisfied)
+
+        assert_evals_to(check_succeed, context, CheckStatus.SUCCESS)
+        assert_evals_to(check_fail, context, CheckStatus.ERROR)
+        assert_evals_to(check_partially_satisfied, context, CheckStatus.SUCCESS)
+
+    def test_correctly_evaluate_non_negative_and_positive_constraints(
+        self, df_with_numeric_values
+    ):
+        df = df_with_numeric_values
+
+        nn_check = Check(CheckLevel.ERROR, "a").is_non_negative("att1")
+        pos_check = Check(CheckLevel.ERROR, "a").is_positive("att1")
+
+        context = run_checks(df, nn_check, pos_check)
+
+        assert_evals_to(nn_check, context, CheckStatus.SUCCESS)
+        assert_evals_to(pos_check, context, CheckStatus.SUCCESS)

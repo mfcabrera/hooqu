@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, List, Optional, Sequence, Set, Tuple, cast
+from typing import Any, Callable, List, Optional, Sequence, Set, Tuple, cast, Union
 
 from hooqu.analyzers import Analyzer
 from hooqu.analyzers.runners import AnalyzerContext
@@ -10,17 +10,23 @@ from hooqu.constraints import (
     ConstraintDecorator,
     ConstraintResult,
     completeness_constraint,
+    compliance_constraint,
     max_constraint,
     mean_constraint,
     min_constraint,
+    quantile_constraint,
     size_constraint,
     standard_deviation_constraint,
     sum_constraint,
-    quantile_constraint,
 )
 from hooqu.constraints.constraint import ConstraintStatus
 
-IS_ONE = lambda x: x == 1
+
+def _is_one(value: Union[float, int]) -> bool:
+    return value == 1
+
+
+IS_ONE = _is_one
 
 
 class CheckLevel(Enum):
@@ -285,9 +291,7 @@ class Check:
 
         """
         return self._add_filterable_constraint(
-            lambda filter_: sum_constraint(
-                column, assertion, filter_, hint
-            )
+            lambda filter_: sum_constraint(column, assertion, filter_, hint)
         )
 
     def has_quantile(
@@ -317,9 +321,77 @@ class Check:
 
         """
         return self._add_filterable_constraint(
-            lambda filter_: quantile_constraint(
-                column, q, assertion, filter_, hint
+            lambda filter_: quantile_constraint(column, q, assertion, filter_, hint)
+        )
+
+    def satisfies(
+        self,
+        column_condition: str,
+        constraint_name: str,
+        assertion: Callable[[float], bool] = IS_ONE,
+        hint: Optional[str] = None,
+    ) -> "CheckWithLastConstraintFilterable":
+
+        return self._add_filterable_constraint(
+            lambda filter_: compliance_constraint(
+                constraint_name, column_condition, assertion, filter_, hint
             )
+        )
+
+    def is_non_negative(
+        self,
+        column: str,
+        assertion: Callable[[float], bool] = IS_ONE,
+        hint: Optional[str] = None,
+    ) -> "CheckWithLastConstraintFilterable":
+        """
+        Creates a constraint that asserts that a column contains no negative values
+
+        Parameters
+        ----------
+
+        column:
+            Column to run the assertion on
+        assertion:
+            Callable that receives a float input parameter and returns a boolean
+        hint:
+            A hint to provide additional context why a constraint could have failed
+
+        """
+        # coalescing column to not count NULL values as non-compliant
+        return self.satisfies(
+            f"{column}.fillna(0) >= 0",
+            f"{column} is non-negative",
+            assertion,
+            hint=hint,
+        )
+
+    def is_positive(
+        self,
+        column: str,
+        assertion: Callable[[float], bool] = IS_ONE,
+        hint: Optional[str] = None,
+    ) -> "CheckWithLastConstraintFilterable":
+        """
+        Creates a constraint that asserts that a column contains positive values.
+
+        Parameters
+        ----------
+
+        column:
+            Column to run the assertion on
+        assertion:
+            Callable that receives a float input parameter and returns a boolean
+        hint:
+            A hint to provide additional context why a constraint could have failed
+
+        """
+        # coalescing column to not count NULL values as non-compliant
+        return self.satisfies(
+            f"{column}.fillna(1.0) > 0",
+            f"{column} is positive",
+            assertion,
+            hint=hint,
         )
 
     def evaluate(self, context: AnalyzerContext) -> CheckResult:

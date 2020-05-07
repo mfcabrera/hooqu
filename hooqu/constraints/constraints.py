@@ -150,4 +150,4 @@ def compliance_constraint(
     compliance = Compliance(name, column, where)
     constraint = AnalysisBasedConstraint(compliance, assertion, hint)
 
-    return NamedConstraint(constraint, "ComplianceConstraint({compliance})")
+    return NamedConstraint(constraint, f"ComplianceConstraint({compliance})")
