@@ -1,12 +1,8 @@
+from dataclasses import dataclass
 from typing import Optional
 
-from hooqu.analyzers.analyzer import NumMatchesAndCount
+from hooqu.analyzers.analyzer import Entity, NonScanAnalyzer, NumMatchesAndCount
 from hooqu.dataframe import DataFrame
-
-from hooqu.analyzers.analyzer import (
-    NonScanAnalyzer,
-    Entity,
-)
 
 
 class Compliance(NonScanAnalyzer[NumMatchesAndCount]):
@@ -43,3 +39,19 @@ class Compliance(NonScanAnalyzer[NumMatchesAndCount]):
         count = len(result)
         matches = result.sum()
         return NumMatchesAndCount(matches, count)
+
+    def __eq__(self, other):
+        # I have to re-implement again this because
+        # I am inheriting from a data class with default values and I cannot
+        # make this a data-class as I would get parameters with default values followed
+        # by parameters without one so it will fail
+        if not isinstance(other, Compliance):
+            return NotImplemented
+        return super().__eq__(other) and self.predicate == other.predicate
+
+    def __repr__(self,):
+        parent = super().__repr__()
+        return parent[:-1] + f", predicate='{self.predicate}')"
+
+    def __hash__(self,):
+        return super().__hash__() ^ hash(self.predicate)
