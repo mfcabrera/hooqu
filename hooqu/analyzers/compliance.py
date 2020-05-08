@@ -49,9 +49,5 @@ class Compliance(NonScanAnalyzer[NumMatchesAndCount]):
             return NotImplemented
         return super().__eq__(other) and self.predicate == other.predicate
 
-    def __repr__(self,):
-        parent = super().__repr__()
-        return parent[:-1] + f", predicate='{self.predicate}')"
-
     def __hash__(self,):
         return super().__hash__() ^ hash(self.predicate)
