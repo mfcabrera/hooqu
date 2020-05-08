@@ -193,3 +193,106 @@ class TestSatifiesCheck:
 
         assert_evals_to(nn_check, context, CheckStatus.SUCCESS)
         assert_evals_to(pos_check, context, CheckStatus.SUCCESS)
+
+    def test_correctly_evaluate_is_contained_constraints(self, df_with_distinct_values):
+        df = df_with_distinct_values
+
+        range_check = Check(CheckLevel.ERROR, "a").is_contained_in(
+            "att1", ("a", "b", "c")
+        )
+
+        incorrect_range_check = Check(CheckLevel.ERROR, "a").is_contained_in(
+            "att1", ("a", "b")
+        )
+        incorrect_range_check_with_assertion = Check(
+            CheckLevel.ERROR, "a"
+        ).is_contained_in("att1", ("a",), lambda v: v == 0.5)
+
+        range_results = run_checks(
+            df,
+            range_check,
+            incorrect_range_check,
+            incorrect_range_check_with_assertion,
+        )
+
+        assert_evals_to(range_check, range_results, CheckStatus.SUCCESS)
+        assert_evals_to(incorrect_range_check, range_results, CheckStatus.ERROR)
+        assert_evals_to(
+            incorrect_range_check_with_assertion, range_results, CheckStatus.SUCCESS
+        )
+
+    def test_correctly_evaluate_is_contained_in_range_constraints(
+        self, df_with_numeric_values,
+    ):
+
+        df = df_with_numeric_values
+
+        numeric_range_check1 = Check(CheckLevel.ERROR, "nr1").is_contained_in_range(
+            "att2", 0, 7
+        )
+
+        numeric_range_check2 = Check(CheckLevel.ERROR, "nr2").is_contained_in_range(
+            "att2", 1, 7
+        )
+
+        numeric_range_check3 = Check(CheckLevel.ERROR, "nr3").is_contained_in_range(
+            "att2", 0, 6
+        )
+
+        numeric_range_check4 = Check(CheckLevel.ERROR, "nr4").is_contained_in_range(
+            "att2", 0, 7, include_lower_bound=False, include_upper_bound=False
+        )
+
+        numeric_range_check5 = Check(CheckLevel.ERROR, "nr5").is_contained_in_range(
+            "att2", -1, 8, include_lower_bound=False, include_upper_bound=False
+        )
+
+        numeric_range_check6 = Check(CheckLevel.ERROR, "nr6").is_contained_in_range(
+            "att2", 0, 7, include_lower_bound=True, include_upper_bound=False
+        )
+
+        numeric_range_check7 = Check(CheckLevel.ERROR, "nr7").is_contained_in_range(
+            "att2", 0, 8, include_lower_bound=True, include_upper_bound=False
+        )
+
+        numeric_range_check8 = Check(CheckLevel.ERROR, "nr8").is_contained_in_range(
+            "att2", 0, 7, include_lower_bound=False, include_upper_bound=True
+        )
+
+        numeric_range_check9 = Check(CheckLevel.ERROR, "nr9").is_contained_in_range(
+            "att2", -1, 7, include_lower_bound=False, include_upper_bound=True
+        )
+
+        numeric_range_results = run_checks(
+            df,
+            numeric_range_check1,
+            numeric_range_check2,
+            numeric_range_check3,
+            numeric_range_check4,
+            numeric_range_check5,
+            numeric_range_check6,
+            numeric_range_check7,
+            numeric_range_check8,
+            numeric_range_check9,
+        )
+
+        assert_evals_to(
+            numeric_range_check1, numeric_range_results, CheckStatus.SUCCESS
+        )
+        assert_evals_to(numeric_range_check2, numeric_range_results, CheckStatus.ERROR)
+        assert_evals_to(numeric_range_check3, numeric_range_results, CheckStatus.ERROR)
+        assert_evals_to(numeric_range_check4, numeric_range_results, CheckStatus.ERROR)
+
+        assert_evals_to(
+            numeric_range_check5, numeric_range_results, CheckStatus.SUCCESS
+        )
+
+        assert_evals_to(numeric_range_check6, numeric_range_results, CheckStatus.ERROR)
+        assert_evals_to(
+            numeric_range_check7, numeric_range_results, CheckStatus.SUCCESS
+        )
+
+        assert_evals_to(numeric_range_check8, numeric_range_results, CheckStatus.ERROR)
+        assert_evals_to(
+            numeric_range_check9, numeric_range_results, CheckStatus.SUCCESS
+        )

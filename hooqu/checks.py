@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, List, Optional, Sequence, Set, Tuple, cast, Union
+from typing import Any, Callable, List, Optional, Sequence, Set, Tuple, Union, cast
 
 from hooqu.analyzers import Analyzer
 from hooqu.analyzers.runners import AnalyzerContext
@@ -360,7 +360,7 @@ class Check:
         """
         # coalescing column to not count NULL values as non-compliant
         return self.satisfies(
-            f"{column}.fillna(0) >= 0",
+            f"`{column}`.fillna(0) >= 0",
             f"{column} is non-negative",
             assertion,
             hint=hint,
@@ -388,10 +388,83 @@ class Check:
         """
         # coalescing column to not count NULL values as non-compliant
         return self.satisfies(
-            f"{column}.fillna(1.0) > 0",
+            f"`{column}`.fillna(1.0) > 0",
             f"{column} is positive",
             assertion,
             hint=hint,
+        )
+
+    def is_contained_in(
+        self,
+        column: str,
+        allowed_values: Sequence[str],
+        assertion: Callable[[float], bool] = IS_ONE,
+        hint: Optional[str] = None,
+    ):
+        """
+        Asserts that every non-null value in a column is contained in a set of
+        predefined values
+
+        Parameters
+        ----------
+
+        column:
+            Column to run the assertion on
+        allowed_values:
+            Allowed values for the column
+        assertion:
+            Callable that receives a float input parameter and returns a boolean
+        hint:
+            A hint to provide additional context why a constraint could have failed
+
+        """
+
+        predicate = f"`{column}`.isna() or `{column}`.isin({allowed_values})"
+        return self.satisfies(
+            predicate, f"{column} contained in {allowed_values}", assertion, hint
+        )
+
+    def is_contained_in_range(
+        self,
+        column: str,
+        lower_bound: float,
+        upper_bound: float,
+        include_lower_bound: bool = True,
+        include_upper_bound: bool = True,
+        hint: Optional[str] = None,
+    ):
+        """
+        Asserts that the non-null values in a numeric column fall into the
+        predefined interval
+
+        Parameters
+        ----------
+
+        column:
+            Column to run the assertion on
+        lower_bound:
+            lower bound of the interval
+        upper_bound:
+            upper bound of the interval
+        include_lower_bound:
+            is a value equal to the lower bound allowed?
+        include_upper_bound:
+             is a value equal to the upper bound allowed?
+        hint:
+            A hint to provide additional context why a constraint could have failed
+
+        """
+
+        left_operand = ">=" if include_lower_bound else ">"
+        right_operand = "<=" if include_upper_bound else "<"
+
+        predicate = (
+            f"`{column}`.isna() or "
+            f"(`{column}` {left_operand} {lower_bound} "
+            f" and `{column}` {right_operand} {upper_bound})"
+        )
+        return self.satisfies(
+            predicate, f"{column} between {lower_bound} and {upper_bound}", hint=hint
         )
 
     def evaluate(self, context: AnalyzerContext) -> CheckResult:

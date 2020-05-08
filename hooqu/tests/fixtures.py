@@ -95,6 +95,21 @@ def df_with_unique_columns():
     )
 
 
+@pytest.fixture
+def df_with_distinct_values():
+    return pd.DataFrame(
+        [
+            ("a", None),
+            ("a", None),
+            (None, "x"),
+            ("b", "x"),
+            ("b", "x"),
+            ("c", "y")
+        ],
+        columns=("att1", "att2")
+    )
+
+
 def df_strategy(allow_nan=True, allow_infinity=True):
     """
     This strategies generates dataframes that might containing
