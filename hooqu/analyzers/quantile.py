@@ -60,3 +60,18 @@ class Quantile(StandardScanShareableAnalyzer[QuantileState]):
 
     def additional_preconditions(self) -> List[Callable[[DataFrame], None]]:
         return [has_column(self.instance), is_numeric(self.instance)]
+
+    def __eq__(self, other):
+        # I have to re-implement again this because
+        # I am inheriting from a data class with default values and I cannot
+        # make this a data-class as I would get parameters with default values followed
+        # by parameters without one so it will fail
+        if not isinstance(other, Quantile):
+            return NotImplemented
+        return super().__eq__(other) and self.quantile == other.quantile
+
+    def __hash__(self,):
+        return super().__hash__() ^ hash(self.quantile)
+
+    def __repr__(self,):
+        return super().__repr__()[:-1] + f", quantile={self.quantile})"

@@ -91,6 +91,29 @@ class TestChecksOnBasicStats:
             base_check.has_quantile("att1", 0.5, lambda v: v == 3.0), context_numeric
         )
 
+    def test_multiple_quantiles_are_computed(self, df_with_numeric_values):
+        df = df_with_numeric_values
+        analyzers = [
+            Quantile("att1", 0.1),
+            Quantile("att1", 0.5),
+            Quantile("att1", 0.9),
+        ]
+        context_numeric = do_analysis_run(df, analyzers)
+        assert len(context_numeric.metric_map) == 3
+
+        print(context_numeric)
+        base_check = Check(CheckLevel.ERROR, description="a description")
+
+        assert is_success(
+            base_check.has_quantile("att1", 0.5, lambda v: v == 3.0), context_numeric
+        )
+        assert is_success(
+            base_check.has_quantile("att1", 0.9, lambda v: v == 5.0), context_numeric
+        )
+        assert is_success(
+            base_check.has_quantile("att1", 0.1, lambda v: v == 1.0), context_numeric
+        )
+
     def test_correctly_evaluate_mean_constraints(self, df_with_numeric_values):
 
         df = df_with_numeric_values
