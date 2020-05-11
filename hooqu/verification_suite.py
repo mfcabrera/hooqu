@@ -28,7 +28,7 @@ class VerificationRunBuilder:
         self._required_analyzers: Optional[Tuple[Analyzer, ...]] = None
 
     # FIXME: This does not make a lot of sense now
-    # but let's keep it like this for API compatability
+    # but let's keep it like this for API compatibility
     def run(self) -> VerificationResult:
 
         return VerificationSuite().do_verification_run(
