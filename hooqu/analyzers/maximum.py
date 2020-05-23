@@ -4,7 +4,7 @@ from typing import Callable, List, Optional
 from hooqu.analyzers.analyzer import (AggDefinition, DoubledValuedState,
                                       StandardScanShareableAnalyzer)
 from hooqu.analyzers.preconditions import has_column, is_numeric
-from hooqu.dataframe import DataFrame
+from hooqu.dataframe import DataFrameLike
 
 
 @dataclass
@@ -24,7 +24,7 @@ class Maximum(StandardScanShareableAnalyzer[MaxState]):
         super().__init__("Maximum", column, where=where)
 
     def from_aggregation_result(
-        self, result: DataFrame, offset: int = 0
+        self, result: DataFrameLike, offset: int = 0
     ) -> Optional[MaxState]:
         value = 0
         if len(result):  # otherwise an empty dataframe
@@ -41,5 +41,5 @@ class Maximum(StandardScanShareableAnalyzer[MaxState]):
         # before as the API does not get translated into SQL as with spark
         return {self.instance: {"max", }}
 
-    def additional_preconditions(self) -> List[Callable[[DataFrame], None]]:
+    def additional_preconditions(self) -> List[Callable[[DataFrameLike], None]]:
         return [has_column(self.instance), is_numeric(self.instance)]

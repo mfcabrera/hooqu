@@ -1,7 +1,7 @@
 from typing import Optional
 
 from hooqu.analyzers.analyzer import Entity, NonScanAnalyzer, NumMatchesAndCount
-from hooqu.dataframe import DataFrame
+from hooqu.dataframe import DataFrameLike
 
 
 class Compliance(NonScanAnalyzer[NumMatchesAndCount]):
@@ -20,7 +20,7 @@ class Compliance(NonScanAnalyzer[NumMatchesAndCount]):
         so metric instance name should be provided,
         describing what the analysis being done for.
     predicate:
-        predicate that can be understood by DataFrame.eval.
+        predicate that can be understood by DataFrameLike.eval.
     where:
         Additional filter to apply before the analyzer is run.
 
@@ -30,7 +30,7 @@ class Compliance(NonScanAnalyzer[NumMatchesAndCount]):
         super().__init__("Compliance", instance, Entity.COLUMN, where)
         self.predicate = predicate
 
-    def compute_state_from(self, dataframe: DataFrame) -> NumMatchesAndCount:
+    def compute_state_from(self, dataframe: DataFrameLike) -> NumMatchesAndCount:
 
         if self.where:
             dataframe = dataframe.query(self.where)

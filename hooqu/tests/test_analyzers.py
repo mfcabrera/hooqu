@@ -56,7 +56,7 @@ class TestBasicStatisticsAnalyzers:
     ):
         data = df_with_numeric_values
         col = "att1"
-        a = Minimum(col, where=f"item != '6'")
+        a = Minimum(col, where="item != '6'")
         value = a.calculate(data).value
 
         assert value == Success(1.0)
@@ -73,7 +73,7 @@ class TestBasicStatisticsAnalyzers:
     def test_computes_max_value_with_predicate_correctly(self, df_with_numeric_values):
         data = df_with_numeric_values
         col = "att1"
-        a = Maximum(col, where=f"item != '6'")
+        a = Maximum(col, where="item != '6'")
         value = a.calculate(data).value
 
         assert value == Success(5.0)
@@ -105,7 +105,7 @@ class TestBasicStatisticsAnalyzers:
     def test_computes_mean_value_with_predicate_correctly(self, df_with_numeric_values):
         data = df_with_numeric_values
         col = "att1"
-        a = Mean(col, where=f"item != '6'")
+        a = Mean(col, where="item != '6'")
         value = a.calculate(data).value
 
         assert value == Success(3.0)
@@ -155,7 +155,7 @@ class TestBasicStatisticsAnalyzers:
     def test_computes_std_value_with_predicate_correctly(self, df_with_numeric_values):
         data = df_with_numeric_values
         col = "att1"
-        a = StandardDeviation(col, where=f"item != '6'")
+        a = StandardDeviation(col, where="item != '6'")
         value = a.calculate(data).value
 
         assert value == Success(1.4142135623730951)
@@ -178,7 +178,7 @@ class TestBasicStatisticsAnalyzers:
     def test_computes_sum_value_with_predicate_correctly(self, df_with_numeric_values):
         data = df_with_numeric_values
         col = "att1"
-        a = Sum(col, where=f"item != '6'")
+        a = Sum(col, where="item != '6'")
         value = a.calculate(data).value
 
         assert value == Success(15)

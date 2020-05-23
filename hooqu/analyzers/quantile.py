@@ -4,7 +4,7 @@ from typing import Callable, List, Optional
 from hooqu.analyzers.analyzer import (AggDefinition, DoubledValuedState,
                                       StandardScanShareableAnalyzer)
 from hooqu.analyzers.preconditions import has_column, is_numeric
-from hooqu.dataframe import DataFrame, quantile_aggregation
+from hooqu.dataframe import DataFrameLike, quantile_aggregation
 
 
 @dataclass
@@ -30,7 +30,7 @@ class Quantile(StandardScanShareableAnalyzer[QuantileState]):
     -----------
 
     column:
-        Column in DataFrame for which the quantile is analyzed.
+        Column in DataFrameLike for which the quantile is analyzed.
 
     quantile:
         Computed Quantile. Must be in the interval [0, 1], where 0.5 would be the
@@ -45,7 +45,7 @@ class Quantile(StandardScanShareableAnalyzer[QuantileState]):
         self.quantile = quantile
 
     def from_aggregation_result(
-        self, result: DataFrame, offset: int = 0
+        self, result: DataFrameLike, offset: int = 0
     ) -> Optional[QuantileState]:
         value = 0
         if len(result):  # otherwise an empty dataframe
@@ -56,9 +56,9 @@ class Quantile(StandardScanShareableAnalyzer[QuantileState]):
     def _aggregation_functions(self, where: Optional[str] = None) -> AggDefinition:
         # this implementation uses pandas quantile underneath
         # so it is not yet parallelizable
-        return {self.instance: [quantile_aggregation(self.quantile)]}
+        return {self.instance: {quantile_aggregation(self.quantile)}}
 
-    def additional_preconditions(self) -> List[Callable[[DataFrame], None]]:
+    def additional_preconditions(self) -> List[Callable[[DataFrameLike], None]]:
         return [has_column(self.instance), is_numeric(self.instance)]
 
     def __eq__(self, other):

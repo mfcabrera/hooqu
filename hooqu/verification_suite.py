@@ -107,7 +107,7 @@ class VerificationSuite:
         check_results = {c: c.evaluate(analysis_context) for c in checks}
 
         if not check_results:
-            verification_status = CheckStatus.SUCESS
+            verification_status = CheckStatus.SUCCESS
         else:
             verification_status = max(cr.status for cr in check_results.values())
 

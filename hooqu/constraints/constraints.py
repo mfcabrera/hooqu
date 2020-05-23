@@ -2,14 +2,22 @@ from typing import Callable, Optional
 
 from hooqu.analyzers import (
     Completeness,
+    Compliance,
     Maximum,
+    MaxState,
     Mean,
+    MeanState,
     Minimum,
+    MinState,
+    NumMatches,
+    NumMatchesAndCount,
+    Quantile,
+    QuantileState,
     Size,
     StandardDeviation,
+    StandardDeviationState,
     Sum,
-    Quantile,
-    Compliance,
+    SumState,
 )
 from hooqu.constraints.analysis_based_constraint import AnalysisBasedConstraint
 from hooqu.constraints.constraint import Constraint, NamedConstraint
@@ -25,7 +33,9 @@ def size_constraint(
         raise ValueError("assertion is not a callable")
 
     size = Size(where)
-    constraint = AnalysisBasedConstraint(size, assertion, hint)
+    constraint = AnalysisBasedConstraint[NumMatches, int, int](
+        size, assertion, hint=hint
+    )
 
     return NamedConstraint(constraint, f"SizeConstraint({size})")
 
@@ -38,7 +48,9 @@ def min_constraint(
 ) -> Constraint:
 
     minimum = Minimum(column, where)
-    constraint = AnalysisBasedConstraint(minimum, assertion, hint)
+    constraint = AnalysisBasedConstraint[MinState, float, float](
+        minimum, assertion, hint=hint
+    )
 
     return NamedConstraint(constraint, f"MinimumConstraint({minimum})")
 
@@ -51,7 +63,9 @@ def max_constraint(
 ) -> Constraint:
 
     maximum = Maximum(column, where)
-    constraint = AnalysisBasedConstraint(maximum, assertion, hint)
+    constraint = AnalysisBasedConstraint[MaxState, float, float](
+        maximum, assertion, hint=hint
+    )
 
     return NamedConstraint(constraint, f"MaximumConstraint({maximum})")
 
@@ -64,7 +78,9 @@ def completeness_constraint(
 ) -> Constraint:
 
     completeness = Completeness(column, where)
-    constraint = AnalysisBasedConstraint(completeness, assertion, hint)
+    constraint = AnalysisBasedConstraint[NumMatchesAndCount, float, float](
+        completeness, assertion, hint=hint
+    )
 
     return NamedConstraint(constraint, f"CompletenessConstraint({completeness})")
 
@@ -77,7 +93,9 @@ def mean_constraint(
 ) -> Constraint:
 
     mean = Mean(column, where)
-    constraint = AnalysisBasedConstraint(mean, assertion, hint)
+    constraint = AnalysisBasedConstraint[MeanState, float, float](
+        mean, assertion, hint=hint
+    )
 
     return NamedConstraint(constraint, f"MeanConstraint({mean})")
 
@@ -90,7 +108,9 @@ def sum_constraint(
 ) -> Constraint:
 
     sum_ = Sum(column, where)
-    constraint = AnalysisBasedConstraint(sum_, assertion, hint)
+    constraint = AnalysisBasedConstraint[SumState, float, float](
+        sum_, assertion, hint=hint
+    )
 
     return NamedConstraint(constraint, f"SumConstraint({sum})")
 
@@ -103,7 +123,9 @@ def standard_deviation_constraint(
 ) -> Constraint:
 
     std = StandardDeviation(column, where)
-    constraint = AnalysisBasedConstraint(std, assertion, hint)
+    constraint = AnalysisBasedConstraint[StandardDeviationState, float, float](
+        std, assertion, hint=hint
+    )
 
     return NamedConstraint(constraint, f"StandardDeviationConstraint({std})")
 
@@ -115,19 +137,33 @@ def quantile_constraint(
     where: Optional[str] = None,
     hint: Optional[str] = None,
 ) -> Constraint:
+    """
+    Runs quantile analysis on the given column and executes the assertion
 
+    column:
+        Column to run the assertion on
+    quantile:
+        Which quantile to assert on
+    assertion
+        Callable that receives a float input parameter (the computed quantile)
+        and returns a boolean
+    hint:
+        A hint to provide additional context why a constraint could have failed
+    """
     quant = Quantile(column, quantile, where)
-    constraint = AnalysisBasedConstraint(quant, assertion, hint)
+    constraint = AnalysisBasedConstraint[QuantileState, float, float](
+        quant, assertion, hint=hint
+    )
 
     return NamedConstraint(constraint, f"QuantileConstraint({quant})")
 
 
 def compliance_constraint(
-        name: str,
-        column: str,
-        assertion: Callable[[float], bool],
-        where: Optional[str] = None,
-        hint: Optional[str] = None
+    name: str,
+    column: str,
+    assertion: Callable[[float], bool],
+    where: Optional[str] = None,
+    hint: Optional[str] = None,
 ) -> Constraint:
     """
     Runs given the expression on the given column(s) and executes the assertion
@@ -148,6 +184,8 @@ def compliance_constraint(
 
     """
     compliance = Compliance(name, column, where)
-    constraint = AnalysisBasedConstraint(compliance, assertion, hint)
+    constraint = AnalysisBasedConstraint[NumMatchesAndCount, float, float](
+        compliance, assertion, hint=hint
+    )
 
     return NamedConstraint(constraint, f"ComplianceConstraint({compliance})")

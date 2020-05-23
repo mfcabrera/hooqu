@@ -5,7 +5,7 @@ from typing import Callable, List, Optional
 from hooqu.analyzers.analyzer import (AggDefinition, NumMatchesAndCount,
                                       StandardScanShareableAnalyzer)
 from hooqu.analyzers.preconditions import has_column
-from hooqu.dataframe import DataFrame, count_all, count_not_null
+from hooqu.dataframe import DataFrameLike, count_all, count_not_null
 
 
 class Completeness(StandardScanShareableAnalyzer[NumMatchesAndCount]):
@@ -13,7 +13,7 @@ class Completeness(StandardScanShareableAnalyzer[NumMatchesAndCount]):
         super().__init__("Completeness", column, where=where)
 
     def from_aggregation_result(
-        self, result: DataFrame, offset: int = 0
+        self, result: DataFrameLike, offset: int = 0
     ) -> Optional[NumMatchesAndCount]:
 
         count = 0
@@ -27,6 +27,6 @@ class Completeness(StandardScanShareableAnalyzer[NumMatchesAndCount]):
     def _aggregation_functions(self, where: Optional[str] = None) -> AggDefinition:
         return {self.instance: {count_not_null, count_all}}
 
-    def additional_preconditions(self) -> List[Callable[[DataFrame], None]]:
+    def additional_preconditions(self) -> List[Callable[[DataFrameLike], None]]:
         # TODO: does it make sense to implement is_not_nested?
         return [has_column(self.instance)]

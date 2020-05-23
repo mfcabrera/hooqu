@@ -1,13 +1,18 @@
-from hooqu.analyzers.analyzer import Analyzer, NonScanAnalyzer, ScanShareableAnalyzer
+from hooqu.analyzers.analyzer import (
+    Analyzer,
+    NonScanAnalyzer,
+    NumMatchesAndCount,
+    ScanShareableAnalyzer,
+)
 from hooqu.analyzers.completeness import Completeness
 from hooqu.analyzers.compliance import Compliance
-from hooqu.analyzers.maximum import Maximum
-from hooqu.analyzers.mean import Mean
-from hooqu.analyzers.minimum import Minimum
-from hooqu.analyzers.quantile import Quantile
-from hooqu.analyzers.size import Size
-from hooqu.analyzers.standard_deviation import StandardDeviation
-from hooqu.analyzers.sum import Sum
+from hooqu.analyzers.maximum import Maximum, MaxState
+from hooqu.analyzers.mean import Mean, MeanState
+from hooqu.analyzers.minimum import Minimum, MinState
+from hooqu.analyzers.quantile import Quantile, QuantileState
+from hooqu.analyzers.size import NumMatches, Size
+from hooqu.analyzers.standard_deviation import StandardDeviation, StandardDeviationState
+from hooqu.analyzers.sum import Sum, SumState
 
 __all__ = [
     "Analyzer",
@@ -22,4 +27,12 @@ __all__ = [
     "Sum",
     "Quantile",
     "Compliance",
+    "NumMatches",
+    "MinState",
+    "QuantileState",
+    "MaxState",
+    "MeanState",
+    "NumMatchesAndCount",
+    "SumState",
+    "StandardDeviationState",
 ]

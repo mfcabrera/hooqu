@@ -1,7 +1,7 @@
+from collections import defaultdict
 from dataclasses import dataclass, field
 from itertools import accumulate
-from collections import defaultdict
-from typing import Dict, List, Mapping, Optional, Sequence, Set
+from typing import Dict, List, Mapping, Optional, Sequence, Set, cast
 
 import pandas as pd
 from more_itertools import partition
@@ -148,7 +148,7 @@ def compute_precondition_failure_metrics(
 
 
 def run_analyzers_sequentially(
-        data, analyzers: Sequence[Analyzer], aggregate_with=None, save_state_with=None
+    data, analyzers: Sequence[Analyzer], aggregate_with=None, save_state_with=None
 ) -> AnalyzerContext:
     """
     Apparently from the initial tests I made there is not a lot of gain from
@@ -177,7 +177,9 @@ def run_scanning_analyzers(
     others, shareable = partition(
         lambda a: isinstance(a, ScanShareableAnalyzer), analyzers
     )
-    shareable = list(shareable)
+    shareable_list: List[ScanShareableAnalyzer] = cast(
+        List[ScanShareableAnalyzer], list(shareable)
+    )
 
     def merge_aggregations(aggregations_list: List[AggDefinition]):
         ma = defaultdict(set)  # type: ignore
@@ -191,13 +193,13 @@ def run_scanning_analyzers(
     # On Pandas this does not make a lot of sense
     results = None
     metrics_by_analyzer: Dict[Analyzer, Metric] = {}
-    if len(shareable):
+    if len(shareable_list):
         try:
             # aggregations =
             # list(flatten(a._aggregation_functions() for a in shareable))
             # This is a dic with column -> aggregation lists
             merged_aggregations = merge_aggregations(
-                [a._aggregation_functions() for a in shareable]
+                [a._aggregation_functions() for a in shareable_list]
             )
             # aggregations_names = list(flatten(list(merged_aggregations.values())))
 
@@ -206,7 +208,9 @@ def run_scanning_analyzers(
             # FIXME: Note that this only works if the aggregation does not generates
             # from now on internally the analyzers will use the function name so the
             # offset is not used (at least for the pandas implementation)
-            agg_functions = [0] + [len(a._aggregation_functions()) for a in shareable]
+            agg_functions = [0] + [
+                len(a._aggregation_functions()) for a in shareable_list
+            ]
             offsets = list(accumulate(agg_functions, lambda a, b: a + b))[:-1]
             results = data.agg(merged_aggregations)
             for an, offset in zip(shareable, offsets):

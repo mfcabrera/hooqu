@@ -6,7 +6,7 @@ from hooqu.analyzers.analyzer import (
     NonScanAnalyzer,
     Entity,
 )
-from hooqu.dataframe import DataFrame
+from hooqu.dataframe import DataFrameLike
 
 
 @dataclass
@@ -26,5 +26,5 @@ class Size(NonScanAnalyzer[NumMatches]):
 
         super().__init__("Size", "*", Entity.DATASET, where)
 
-    def compute_state_from(self, dataframe: DataFrame) -> NumMatches:
-        return NumMatches(len(dataframe.index))
+    def compute_state_from(self, dataframe: DataFrameLike) -> NumMatches:
+        return NumMatches(len(dataframe))

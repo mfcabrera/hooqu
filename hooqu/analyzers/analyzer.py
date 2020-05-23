@@ -6,18 +6,20 @@ from typing import (
     List,
     Mapping,
     Optional,
-    Sequence,
-    Set,
     TypeVar,
     Union,
+    Set,
 )
 
 from tryingsnake import Failure, Success
 
-from hooqu.dataframe import DataFrame
+from hooqu.dataframe import DataFrameLike
 from hooqu.metrics import DoubleMetric, Entity, Metric
 
-
+# AggDefinition = Union[
+#     Sequence[Union[str, Callable]],
+#     Mapping[str, Union[str, Callable, Iterable[str], Iterable[Callable]]],
+# ]
 AggDefinition = Mapping[str, Set[Union[str, Callable]]]
 
 
@@ -59,7 +61,7 @@ class Analyzer(ABC, Generic[S, M]):
     where: Optional[str] = None
 
     @abstractmethod
-    def compute_state_from(self, data: DataFrame) -> Optional[S]:
+    def compute_state_from(self, data: DataFrameLike) -> Optional[S]:
         pass
 
     @abstractmethod
@@ -70,14 +72,14 @@ class Analyzer(ABC, Generic[S, M]):
     def to_failure_metric(self, ex: Exception) -> M:
         pass
 
-    def preconditions(self) -> List[Callable[[DataFrame], None]]:
+    def preconditions(self) -> List[Callable[[DataFrameLike], None]]:
         return []
 
-    def additional_preconditions(self) -> List[Callable[[DataFrame], None]]:
+    def additional_preconditions(self) -> List[Callable[[DataFrameLike], None]]:
         return []
 
     def calculate(
-        self, data: DataFrame, aggregate_with=None, save_states_with=None
+        self, data: DataFrameLike, aggregate_with=None, save_states_with=None
     ) -> M:
         """
         Runs preconditions, calculates and returns the metric
@@ -118,6 +120,16 @@ class Analyzer(ABC, Generic[S, M]):
         # TODO: deal with aggregate_with
 
         return self.compute_metric_from(state)
+
+    @abstractmethod
+    def metric_from_aggregation_result(
+        self,
+        result: DataFrameLike,
+        offset: int,
+        aggregate_with=None,
+        save_states_with=None,
+    ):
+        pass
 
     def aggregate_state_to(self):
         raise NotImplementedError
@@ -165,15 +177,24 @@ class NonScanAnalyzer(Analyzer[S, DoubleMetric]):
     def to_failure_metric(self, ex: Exception) -> DoubleMetric:
         return metric_from_failure(ex, self.name, self.instance, self.entity)
 
+    def metric_from_aggregation_result(
+        self,
+        result: DataFrameLike,
+        offset: int,
+        aggregate_with=None,
+        save_states_with=None,
+    ):
+        # FIXME: Looks like we need refactoring here to avoid this ugly thing
+        """ We don't calculate metrics from aggregation   """
+        raise NotImplementedError
+
 
 class ScanShareableAnalyzer(Analyzer[S, M]):
     """An analyzer that runs a set of aggregation functions over the data,
     can share scans over the data """
 
     @abstractmethod
-    def _aggregation_functions(
-        self,
-    ) -> Union[Sequence[Union[str, Callable]], Mapping[str, Union[str, Callable]]]:
+    def _aggregation_functions(self,) -> AggDefinition:
         """
         Defines the aggregations to compute on the data
         """
@@ -184,23 +205,29 @@ class ScanShareableAnalyzer(Analyzer[S, M]):
         pass
 
     def metric_from_aggregation_result(
-        self, result: DataFrame, offset: int, aggregate_with=None, save_states_with=None
+        self,
+        result: DataFrameLike,
+        offset: int,
+        aggregate_with=None,
+        save_states_with=None,
     ):
 
         state = self.from_aggregation_result(result, offset)
         return self.calculate_metric(state, aggregate_with, save_states_with)
 
 
-class StandardScanShareableAnalyzer(
-    ScanShareableAnalyzer[S, DoubleMetric]
-):
+class StandardScanShareableAnalyzer(ScanShareableAnalyzer[S, DoubleMetric]):
     @abstractmethod
-    def _aggregation_functions(self) -> Sequence[str]:
+    def _aggregation_functions(self) -> AggDefinition:
         pass
 
     # TODO: Maybe result should be a series
     def metric_from_aggregation_result(
-        self, result: DataFrame, offset: int, aggregate_with=None, save_states_with=None
+        self,
+        result: DataFrameLike,
+        offset: int,
+        aggregate_with=None,
+        save_states_with=None,
     ):
 
         state = self.from_aggregation_result(result, offset)
@@ -215,7 +242,7 @@ class StandardScanShareableAnalyzer(
         else:
             return metric_from_empty(self, self.name, self.instance, self.entity)
 
-    def compute_state_from(self, data: DataFrame) -> Optional[S]:
+    def compute_state_from(self, data: DataFrameLike) -> Optional[S]:
         # first get what aggregations we need to perform on the raw dataframe
         # note: no groupby here so results per column
 
@@ -230,7 +257,7 @@ class StandardScanShareableAnalyzer(
     def to_failure_metric(self, ex: Exception) -> DoubleMetric:
         return metric_from_failure(ex, self.name, self.instance, self.entity)
 
-    def preconditions(self) -> List[Callable[[DataFrame], None]]:
+    def preconditions(self) -> List[Callable[[DataFrameLike], None]]:
         return self.additional_preconditions() + super().preconditions()
 
 
