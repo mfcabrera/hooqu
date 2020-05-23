@@ -1,4 +1,7 @@
+from typing import cast
+
 from hooqu.constraints import (
+    AnalysisBasedConstraint,
     completeness_constraint,
     compliance_constraint,
     max_constraint,
@@ -10,16 +13,15 @@ from hooqu.constraints import (
     sum_constraint,
 )
 from hooqu.constraints.constraint import (
-    Constraint,
     ConstraintDecorator,
     ConstraintResult,
     ConstraintStatus,
 )
 
 
-def calculate(constraint: Constraint, df) -> ConstraintResult:
+def calculate(constraint: AnalysisBasedConstraint, df) -> ConstraintResult:
     if isinstance(constraint, ConstraintDecorator):
-        constraint = constraint.inner
+        constraint = cast(AnalysisBasedConstraint, constraint.inner)
 
     return constraint.calculate_and_evaluate(df)
 

@@ -4,7 +4,7 @@ from typing import Callable, List, Optional
 from hooqu.analyzers.analyzer import (AggDefinition, DoubledValuedState,
                                       StandardScanShareableAnalyzer)
 from hooqu.analyzers.preconditions import has_column, is_numeric
-from hooqu.dataframe import DataFrame
+from hooqu.dataframe import DataFrameLike
 
 
 @dataclass
@@ -27,7 +27,7 @@ class Mean(StandardScanShareableAnalyzer[MeanState]):
         super().__init__("Mean", column, where=where)
 
     def from_aggregation_result(
-        self, result: DataFrame, offset: int = 0
+        self, result: DataFrameLike, offset: int = 0
     ) -> Optional[MeanState]:
         sum_ = 0
         count = 0
@@ -47,5 +47,5 @@ class Mean(StandardScanShareableAnalyzer[MeanState]):
         # before as the API does not get translated into SQL as with spark
         return {self.instance: {"sum", "count"}}
 
-    def additional_preconditions(self) -> List[Callable[[DataFrame], None]]:
+    def additional_preconditions(self) -> List[Callable[[DataFrameLike], None]]:
         return [has_column(self.instance), is_numeric(self.instance)]

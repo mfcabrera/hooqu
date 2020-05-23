@@ -1,4 +1,4 @@
-from typing import Any, Callable, Mapping, Optional
+from typing import Callable, Mapping, Optional, TypeVar, Generic
 
 from tryingsnake import Success
 
@@ -14,7 +14,12 @@ class ConstraintAssertionException(Exception):
     pass
 
 
-class AnalysisBasedConstraint(Constraint):
+S = TypeVar('S')
+V = TypeVar('V')
+M = TypeVar('M')
+
+
+class AnalysisBasedConstraint(Constraint, Generic[S, V, M]):
     """
     Common functionality for all analysis based constraints that
     provides unified way to access AnalyzerContext and metrics stored in it.
@@ -28,8 +33,8 @@ class AnalysisBasedConstraint(Constraint):
     def __init__(
         self,
         analyzer: Analyzer,
-        assertion: Callable[[float], bool],
-        value_picker: Optional[Callable[[], Any]] = None,
+        assertion: Callable[[V], bool],
+        value_picker: Optional[Callable[[M], V]] = None,
         hint: Optional[str] = None,
     ):
         """
@@ -70,6 +75,7 @@ class AnalysisBasedConstraint(Constraint):
         hint = self._hint or ""
         if isinstance(metric_value, Success):
             try:
+                # TODO: run_picker_on_metric, not sure if needed
                 assert_on = metric_value.get()
                 # run assertion
                 assertion_ok = self._run_assertion(assert_on)

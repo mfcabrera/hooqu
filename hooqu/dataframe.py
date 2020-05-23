@@ -9,12 +9,10 @@ from typing import Callable
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
 
+from ._typing import DataFrameLike # noqa:
+
 
 class DataFrame:
-    """
-    This is a place holder to hold the expected methods from
-    the dataframe implementaiton. For now we inherit from Pandas Dataframe.
-    """
     pass
 
 

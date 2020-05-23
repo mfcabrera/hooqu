@@ -5,7 +5,7 @@ from typing import Callable, List, Optional
 from hooqu.analyzers.analyzer import (AggDefinition, DoubledValuedState,
                                       StandardScanShareableAnalyzer)
 from hooqu.analyzers.preconditions import has_column, is_numeric
-from hooqu.dataframe import DataFrame, pop_variance
+from hooqu.dataframe import DataFrameLike, pop_variance
 
 
 @dataclass
@@ -52,7 +52,7 @@ class StandardDeviation(StandardScanShareableAnalyzer[StandardDeviationState]):
         super().__init__("StandardDeviation", column, where=where)
 
     def from_aggregation_result(
-        self, result: DataFrame, offset: int = 0
+        self, result: DataFrameLike, offset: int = 0
     ) -> Optional[StandardDeviationState]:
         if not len(result):
             return StandardDeviationState(0, 0, 0)
@@ -65,5 +65,5 @@ class StandardDeviation(StandardScanShareableAnalyzer[StandardDeviationState]):
     def _aggregation_functions(self, where: Optional[str] = None) -> AggDefinition:
         return {self.instance: {pop_variance}}
 
-    def additional_preconditions(self) -> List[Callable[[DataFrame], None]]:
+    def additional_preconditions(self) -> List[Callable[[DataFrameLike], None]]:
         return [has_column(self.instance), is_numeric(self.instance)]
