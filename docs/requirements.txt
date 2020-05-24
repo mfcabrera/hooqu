@@ -1,3 +1,4 @@
 Sphinx
 sphinx-rtd-theme==0.4.3
 sphinx-autodoc-typehints
+typing_extensions
