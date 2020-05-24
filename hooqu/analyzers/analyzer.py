@@ -1,25 +1,12 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import (
-    Callable,
-    Generic,
-    List,
-    Mapping,
-    Optional,
-    TypeVar,
-    Union,
-    Set,
-)
+from typing import Callable, Generic, List, Mapping, Optional, Set, TypeVar, Union
 
 from tryingsnake import Failure, Success
 
 from hooqu.dataframe import DataFrameLike
 from hooqu.metrics import DoubleMetric, Entity, Metric
 
-# AggDefinition = Union[
-#     Sequence[Union[str, Callable]],
-#     Mapping[str, Union[str, Callable, Iterable[str], Iterable[Callable]]],
-# ]
 AggDefinition = Mapping[str, Set[Union[str, Callable]]]
 
 
@@ -32,21 +19,22 @@ class EmptyStateException(MetricCalculationException):
     pass
 
 
-S = TypeVar("S")
+S = TypeVar("S",)
 M = TypeVar("M", bound=Metric)
 
 
 class State(ABC, Generic[S]):
     @abstractmethod
-    def sum(self, other: S) -> S:
+    # if I annotate the argument mypy rases the "override error"
+    def sum(self, other) -> "State[S]":
         # TODO: check type state
         pass
 
-    def __add__(self, other: S) -> S:
+    def __add__(self, other) -> "State[S]":
         return self.sum(other)
 
 
-class DoubledValuedState(State, Generic[S]):
+class DoubledValuedState(State[S]):
     @abstractmethod
     def metric_value(self,) -> float:
         pass

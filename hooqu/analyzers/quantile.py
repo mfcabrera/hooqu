@@ -8,7 +8,7 @@ from hooqu.dataframe import DataFrameLike, quantile_aggregation
 
 
 @dataclass
-class QuantileState(DoubledValuedState):
+class QuantileState(DoubledValuedState["QuantileState"]):
 
     quantile: float
 

@@ -19,7 +19,7 @@ V = TypeVar('V')
 M = TypeVar('M')
 
 
-class AnalysisBasedConstraint(Constraint, Generic[S, V, M]):
+class AnalysisBasedConstraint(Constraint, Generic[S, M, V]):
     """
     Common functionality for all analysis based constraints that
     provides unified way to access AnalyzerContext and metrics stored in it.
@@ -32,7 +32,7 @@ class AnalysisBasedConstraint(Constraint, Generic[S, V, M]):
     # TODO: Check if implementing value pickler makes sense
     def __init__(
         self,
-        analyzer: Analyzer,
+        analyzer: Analyzer[S, Metric[M]],
         assertion: Callable[[V], bool],
         value_picker: Optional[Callable[[M], V]] = None,
         hint: Optional[str] = None,

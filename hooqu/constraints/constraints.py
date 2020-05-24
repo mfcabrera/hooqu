@@ -22,6 +22,9 @@ from hooqu.analyzers import (
 from hooqu.constraints.analysis_based_constraint import AnalysisBasedConstraint
 from hooqu.constraints.constraint import Constraint, NamedConstraint
 
+# A lot of mypy ignores because mypy is not able to understand that the
+# Analyzers are specialization of Analyzer[K, S, V]
+
 
 def size_constraint(
     assertion: Callable[[int], bool],
@@ -34,7 +37,7 @@ def size_constraint(
 
     size = Size(where)
     constraint = AnalysisBasedConstraint[NumMatches, int, int](
-        size, assertion, hint=hint
+        size, assertion, hint=hint  # type: ignore[arg-type]
     )
 
     return NamedConstraint(constraint, f"SizeConstraint({size})")
@@ -49,7 +52,7 @@ def min_constraint(
 
     minimum = Minimum(column, where)
     constraint = AnalysisBasedConstraint[MinState, float, float](
-        minimum, assertion, hint=hint
+        minimum, assertion, hint=hint  # type: ignore[arg-type]
     )
 
     return NamedConstraint(constraint, f"MinimumConstraint({minimum})")
@@ -64,7 +67,7 @@ def max_constraint(
 
     maximum = Maximum(column, where)
     constraint = AnalysisBasedConstraint[MaxState, float, float](
-        maximum, assertion, hint=hint
+        maximum, assertion, hint=hint  # type: ignore[arg-type]
     )
 
     return NamedConstraint(constraint, f"MaximumConstraint({maximum})")
@@ -79,7 +82,7 @@ def completeness_constraint(
 
     completeness = Completeness(column, where)
     constraint = AnalysisBasedConstraint[NumMatchesAndCount, float, float](
-        completeness, assertion, hint=hint
+        completeness, assertion, hint=hint  # type: ignore[arg-type]
     )
 
     return NamedConstraint(constraint, f"CompletenessConstraint({completeness})")
@@ -94,7 +97,7 @@ def mean_constraint(
 
     mean = Mean(column, where)
     constraint = AnalysisBasedConstraint[MeanState, float, float](
-        mean, assertion, hint=hint
+        mean, assertion, hint=hint  # type: ignore[arg-type]
     )
 
     return NamedConstraint(constraint, f"MeanConstraint({mean})")
@@ -109,7 +112,7 @@ def sum_constraint(
 
     sum_ = Sum(column, where)
     constraint = AnalysisBasedConstraint[SumState, float, float](
-        sum_, assertion, hint=hint
+        sum_, assertion, hint=hint  # type: ignore[arg-type]
     )
 
     return NamedConstraint(constraint, f"SumConstraint({sum})")
@@ -124,7 +127,7 @@ def standard_deviation_constraint(
 
     std = StandardDeviation(column, where)
     constraint = AnalysisBasedConstraint[StandardDeviationState, float, float](
-        std, assertion, hint=hint
+        std, assertion, hint=hint  # type: ignore[arg-type]
     )
 
     return NamedConstraint(constraint, f"StandardDeviationConstraint({std})")
@@ -152,7 +155,7 @@ def quantile_constraint(
     """
     quant = Quantile(column, quantile, where)
     constraint = AnalysisBasedConstraint[QuantileState, float, float](
-        quant, assertion, hint=hint
+        quant, assertion, hint=hint  # type: ignore[arg-type]
     )
 
     return NamedConstraint(constraint, f"QuantileConstraint({quant})")
@@ -185,7 +188,7 @@ def compliance_constraint(
     """
     compliance = Compliance(name, column, where)
     constraint = AnalysisBasedConstraint[NumMatchesAndCount, float, float](
-        compliance, assertion, hint=hint
+        compliance, assertion, hint=hint  # type: ignore[arg-type]
     )
 
     return NamedConstraint(constraint, f"ComplianceConstraint({compliance})")
