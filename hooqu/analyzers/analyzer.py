@@ -1,11 +1,25 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Callable, Generic, List, Mapping, Optional, Set, TypeVar, Union
+from typing import (
+    Callable,
+    Generic,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Set,
+    TypeVar,
+    Union,
+)
 
 from tryingsnake import Failure, Success
 
 from hooqu.dataframe import DataFrameLike
 from hooqu.metrics import DoubleMetric, Entity, Metric
+
+from .preconditions import has_column
+
+COUNT_COL = "org_hooqu_count"
 
 AggDefinition = Mapping[str, Set[Union[str, Callable]]]
 
@@ -41,12 +55,7 @@ class DoubledValuedState(State[S]):
 
 
 # Analyzer module
-@dataclass(frozen=True)  # type: ignore
 class Analyzer(ABC, Generic[S, M]):
-    name: str
-    instance: str
-    entity: Entity = Entity.COLUMN
-    where: Optional[str] = None
 
     @abstractmethod
     def compute_state_from(self, data: DataFrameLike) -> Optional[S]:
@@ -109,16 +118,6 @@ class Analyzer(ABC, Generic[S, M]):
 
         return self.compute_metric_from(state)
 
-    @abstractmethod
-    def metric_from_aggregation_result(
-        self,
-        result: DataFrameLike,
-        offset: int,
-        aggregate_with=None,
-        save_states_with=None,
-    ):
-        pass
-
     def aggregate_state_to(self):
         raise NotImplementedError
 
@@ -146,12 +145,17 @@ class Analyzer(ABC, Generic[S, M]):
         return f"{self.name}({self.instance})"
 
 
+@dataclass(frozen=True)  # type: ignore
 class NonScanAnalyzer(Analyzer[S, DoubleMetric]):
     """Analyzer that does not need to run any aggregation and can extract
     the information straight from the dataframe. This is a special
     implementation of Hooqu
     for the Size Analyzer.
     """
+    name: str
+    instance: str
+    entity: Entity = Entity.COLUMN
+    where: Optional[str] = None
 
     def compute_metric_from(self, state=None) -> DoubleMetric:
         if state is not None:
@@ -177,9 +181,14 @@ class NonScanAnalyzer(Analyzer[S, DoubleMetric]):
         raise NotImplementedError
 
 
+@dataclass(frozen=True)  # type: ignore
 class ScanShareableAnalyzer(Analyzer[S, M]):
     """An analyzer that runs a set of aggregation functions over the data,
     can share scans over the data """
+    name: str
+    instance: str
+    entity: Entity = Entity.COLUMN
+    where: Optional[str] = None
 
     @abstractmethod
     def _aggregation_functions(self,) -> AggDefinition:
@@ -270,6 +279,10 @@ def metric_from_empty(
     return metric_from_failure(e, name, instance, entity)
 
 
+def entity_from(columns: Sequence[str]) -> Entity:
+    return Entity.COLUMN if len(columns) == 1 else Entity.MULTICOLUMN
+
+
 @dataclass(frozen=True)
 class NumMatchesAndCount(DoubledValuedState["NumMatchesAndCount"]):
     """
@@ -290,3 +303,13 @@ class NumMatchesAndCount(DoubledValuedState["NumMatchesAndCount"]):
             return float("nan")
 
         return self.num_matches / self.count
+
+
+class GroupingAnalyzer(Analyzer[S, M]):
+    @property
+    @abstractmethod
+    def grouping_columns(self,) -> Sequence[str]:
+        pass
+
+    def preconditions(self,):
+        [has_column(c) for c in self.grouping_columns] + super().preconditions()

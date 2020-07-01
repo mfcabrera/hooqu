@@ -213,7 +213,7 @@ def run_scanning_analyzers(
             ]
             offsets = list(accumulate(agg_functions, lambda a, b: a + b))[:-1]
             results = data.agg(merged_aggregations)
-            for an, offset in zip(shareable, offsets):
+            for an, offset in zip(shareable_list, offsets):
                 metrics_by_analyzer[an] = _success_or_failure_metric_from(
                     an, results, offset
                 )
@@ -232,7 +232,7 @@ def run_scanning_analyzers(
 
 # originally implementedd in AnalysisRunner.scala
 def _success_or_failure_metric_from(
-    analyzer: Analyzer, aggregation_result, offset: int
+    analyzer: ScanShareableAnalyzer, aggregation_result, offset: int
 ) -> Metric:
 
     try:
