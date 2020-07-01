@@ -52,7 +52,7 @@ lint: ## check style with flake8
 	flake8 hooqu tests
 
 mypy: ## check typing with mypy
-	mypy --config-file="./tox.ini" 	--pretty hooqu
+	mypy --config-file="./tox.ini" hooqu
 
 test: ## run tests quickly with the default Python
 	py.test
