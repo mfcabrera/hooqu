@@ -312,4 +312,4 @@ class GroupingAnalyzer(Analyzer[S, M]):
         pass
 
     def preconditions(self,):
-        [has_column(c) for c in self.grouping_columns] + super().preconditions()
+        return [has_column(c) for c in self.grouping_columns] + super().preconditions()
