@@ -1,4 +1,4 @@
-from typing import Callable, Mapping, Optional, TypeVar, Generic
+from typing import Callable, Generic, Mapping, Optional, TypeVar
 
 from tryingsnake import Success
 
@@ -14,9 +14,9 @@ class ConstraintAssertionException(Exception):
     pass
 
 
-S = TypeVar('S')
-V = TypeVar('V')
-M = TypeVar('M')
+S = TypeVar("S")
+V = TypeVar("V")
+M = TypeVar("M")
 
 
 class AnalysisBasedConstraint(Constraint, Generic[S, M, V]):
@@ -80,7 +80,9 @@ class AnalysisBasedConstraint(Constraint, Generic[S, M, V]):
                 # run assertion
                 assertion_ok = self._run_assertion(assert_on)
                 if assertion_ok:
-                    return ConstraintResult(self, ConstraintStatus.SUCCESS)
+                    return ConstraintResult(
+                        self, ConstraintStatus.SUCCESS, metric=metric
+                    )
                 else:
                     msg = (
                         f"Value {assert_on} does not meet the constraint requirement. "
