@@ -1,8 +1,9 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, Sequence
 
 from hooqu.analyzers import (
     Completeness,
     Compliance,
+    FrequenciesAndNumRows,
     Maximum,
     MaxState,
     Mean,
@@ -18,6 +19,7 @@ from hooqu.analyzers import (
     StandardDeviationState,
     Sum,
     SumState,
+    Uniqueness,
 )
 from hooqu.constraints.analysis_based_constraint import AnalysisBasedConstraint
 from hooqu.constraints.constraint import Constraint, NamedConstraint
@@ -192,3 +194,35 @@ def compliance_constraint(
     )
 
     return NamedConstraint(constraint, f"ComplianceConstraint({compliance})")
+
+
+def uniqueness_constraint(
+    columns: Sequence[str],
+    assertion: Callable[[float], bool],
+    where: Optional[str] = None,
+    hint: Optional[str] = None,
+) -> Constraint:
+    """
+    Runs Uniqueness analysis on the given columns and executes the assertion
+    columns.
+
+    Parameters:
+    ----------
+
+    columns:
+        Columns to run the assertion on.
+    assertion:
+        Callable that receives a float input parameter and returns a boolean
+    where:
+        Additional filter to apply before the analyzer is run.
+    hint:
+         A hint to provide additional context why a constraint could have failed
+
+    """
+
+    uniqueness = Uniqueness(columns, where)
+    constraint = AnalysisBasedConstraint[FrequenciesAndNumRows, float, float](
+        uniqueness, assertion, hint=hint  # type: ignore[arg-type]
+    )
+
+    return NamedConstraint(constraint, f"UniquenessConstraint({uniqueness})")

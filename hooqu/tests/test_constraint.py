@@ -1,4 +1,5 @@
 from typing import cast
+import pandas as pd
 
 from hooqu.constraints import (
     AnalysisBasedConstraint,
@@ -11,6 +12,7 @@ from hooqu.constraints import (
     size_constraint,
     standard_deviation_constraint,
     sum_constraint,
+    uniqueness_constraint,
 )
 from hooqu.constraints.constraint import (
     ConstraintDecorator,
@@ -108,4 +110,27 @@ def test_compliance_constraint(df_with_numeric_values):
             compliance_constraint("rule1", "att1 > 2 ", lambda pct: pct >= 0.9), df
         ).status
         == ConstraintStatus.FAILURE
+    )
+
+
+def test_uniqueness_constraint():
+    df_nunique = pd.DataFrame({"att1": [0, 1, 2, 5, 5]})
+    df_unique = pd.DataFrame({"att1": range(0, 10)})
+
+    assert (
+        calculate(
+            uniqueness_constraint(["att1"], lambda v: v > 0.2), df_nunique
+        ).status == ConstraintStatus.SUCCESS
+    )
+
+    assert (
+        calculate(
+            uniqueness_constraint(["att1"], lambda v: v == 1.0), df_nunique
+        ).status == ConstraintStatus.FAILURE
+    )
+
+    assert (
+        calculate(
+            uniqueness_constraint(["att1"], lambda v: v == 1.0), df_unique
+        ).status == ConstraintStatus.SUCCESS
     )

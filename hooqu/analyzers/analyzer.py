@@ -313,3 +313,11 @@ class GroupingAnalyzer(Analyzer[S, M]):
 
     def preconditions(self,):
         return [has_column(c) for c in self.grouping_columns] + super().preconditions()
+
+    @property
+    @abstractmethod
+    def instance(self,) -> str:
+        pass
+
+    def entity(self,) -> Entity:
+        return entity_from(self.grouping_columns)

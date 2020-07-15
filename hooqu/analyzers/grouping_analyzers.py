@@ -113,6 +113,10 @@ class ScanShareableFrequencyBasedAnalyzer(FrequencyBasedAnalyzer, ABC):
         super().__init__(cols_to_group_on)
         self.name = name
 
+    @property
+    def instance(self):
+        return ",".join(self.grouping_columns)
+
     @abstractmethod
     def _aggregation_functions(self, num_rows: int) -> AggDefinition:
         pass
@@ -129,25 +133,26 @@ class ScanShareableFrequencyBasedAnalyzer(FrequencyBasedAnalyzer, ABC):
             return metric_from_empty(
                 self,
                 self.name,
-                ",".join(self.grouping_columns),
+                self.instance,
                 entity_from(self.grouping_columns),
             )
 
     def from_aggregation_result(
         self, result: DataFrameLike, offset: int
     ) -> DoubleMetric:
+
         if not len(result):
             return metric_from_empty(
                 self,
                 self.name,
-                ",".join(self.grouping_columns),
+                self.instance,
                 entity_from(self.grouping_columns),
             )
         else:
             return metric_from_value(
-                float(result.iloc[0]),
+                float(result.iloc[offset]),
                 self.name,
-                ",".join(self.grouping_columns),
+                self.instance,
                 entity_from(self.grouping_columns),
             )
 
@@ -155,6 +160,6 @@ class ScanShareableFrequencyBasedAnalyzer(FrequencyBasedAnalyzer, ABC):
         return metric_from_failure(
             ex,
             self.name,
-            ",".join(self.grouping_columns),
+            self.instance,
             entity_from(self.grouping_columns),
         )

@@ -16,6 +16,10 @@ class _UniquenessDataClassMixin:
 
 
 class Uniqueness(ScanShareableFrequencyBasedAnalyzer, _UniquenessDataClassMixin):
+    """
+    Uniqueness is the fraction of unique values of a column(s), i.e.,
+    values that occur exactly once.
+    """
 
     def __init__(self, columns: Sequence[str], where: Optional[str] = None):
         super().__init__("Uniqueness", columns)
