@@ -49,7 +49,7 @@ clean-test: ## remove test and coverage artifacts
 	rm -fr htmlcov/
 
 lint: ## check style with flake8
-	flake8 hooqu tests
+	flake8 hooqu
 
 mypy: ## check typing with mypy
 	mypy --config-file="./tox.ini" hooqu
