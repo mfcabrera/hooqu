@@ -319,5 +319,6 @@ class GroupingAnalyzer(Analyzer[S, M]):
     def instance(self,) -> str:
         pass
 
+    @property
     def entity(self,) -> Entity:
         return entity_from(self.grouping_columns)
