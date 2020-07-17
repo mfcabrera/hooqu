@@ -1,4 +1,4 @@
-pip
+pip==20.1.1
 punch.py==2.0.0
 wheel
 watchdog==0.10.2
