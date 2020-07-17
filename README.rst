@@ -6,7 +6,7 @@ Hooqu - Unit Tests for Data
         :target: https://pypi.python.org/pypi/hooqu
 
 .. image:: https://travis-ci.com/mfcabrera/hooqu.svg?token=pq89mpsBBBTg11hAgCHH&branch=master
-        :target: https://travis-ci.org/mfcabrera/hooqu
+        :target: https://travis-ci.com/mfcabrera/hooqu
 
 .. image:: https://readthedocs.org/projects/hooqu/badge/?version=latest
         :target: https://hooqu.readthedocs.io/en/latest/?badge=latest
@@ -99,7 +99,7 @@ In code this looks as follows:
               Check(CheckLevel.ERROR, "Basic Check")
               .has_size(lambda sz: sz == 5)  # we expect 5 rows
               .is_complete("id")  # should never be None/Null
-              # .is_unique("id")  # should not contain duplicates (NOT YET IMPLEMENTED)
+              .is_unique("id")  # should not contain duplicates
               .is_complete("productName")  # should never be None/Null
               .is_contained_in("priority", ("high", "low"))
               .is_non_negative("numViews")
@@ -161,5 +161,5 @@ Pandas (and hopefully in the future it will support other compatible dataframe i
 Name
 ---------
 
-Jukumari (pronounced hooqumari) is the Aymara name for the `spectacled bear <https://en.wikipedia.org/wiki/Spectacled_bear>`_ (Tremarctos ornatus), also known as the Andean
+Jukumari (pronounced hooqumari) is the Aymara name for the `spectacled bear <https://en.wikipedia.org/wiki/Spectacled_bear>`_ (*Tremarctos ornatus*), also known as the Andean
 bear, Andean short-faced bear, or mountain bear.
