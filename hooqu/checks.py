@@ -18,12 +18,9 @@ from hooqu.constraints import (
     size_constraint,
     standard_deviation_constraint,
     sum_constraint,
+    uniqueness_constraint,
 )
 from hooqu.constraints.constraint import ConstraintStatus
-
-
-def _is_one(value: Union[float, int]) -> bool:
-    return value == 1
 
 
 class CheckLevel(Enum):
@@ -42,6 +39,10 @@ class CheckResult:
     check: Any
     status: CheckStatus
     constraint_results: Sequence[ConstraintResult] = field(default_factory=tuple)
+
+
+def is_one(value: Union[float, int]) -> bool:
+    return value == 1
 
 
 @dataclass(frozen=True, eq=True)
@@ -182,7 +183,7 @@ class Check:
 
         """
         return self._add_filterable_constraint(
-            lambda filter_: completeness_constraint(column, _is_one, filter_, hint)
+            lambda filter_: completeness_constraint(column, is_one, filter_, hint)
         )
 
     def has_completeness(
@@ -325,7 +326,7 @@ class Check:
         self,
         column_condition: str,
         constraint_name: str,
-        assertion: Callable[[float], bool] = _is_one,
+        assertion: Callable[[float], bool] = is_one,
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
 
@@ -338,7 +339,7 @@ class Check:
     def is_non_negative(
         self,
         column: str,
-        assertion: Callable[[float], bool] = _is_one,
+        assertion: Callable[[float], bool] = is_one,
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
         """
@@ -366,7 +367,7 @@ class Check:
     def is_positive(
         self,
         column: str,
-        assertion: Callable[[float], bool] = _is_one,
+        assertion: Callable[[float], bool] = is_one,
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
         """
@@ -395,9 +396,9 @@ class Check:
         self,
         column: str,
         allowed_values: Sequence[str],
-        assertion: Callable[[float], bool] = _is_one,
+        assertion: Callable[[float], bool] = is_one,
         hint: Optional[str] = None,
-    ):
+    ) -> "CheckWithLastConstraintFilterable":
         """
         Asserts that every non-null value in a column is contained in a set of
         predefined values
@@ -429,7 +430,7 @@ class Check:
         include_lower_bound: bool = True,
         include_upper_bound: bool = True,
         hint: Optional[str] = None,
-    ):
+    ) -> "CheckWithLastConstraintFilterable":
         """
         Asserts that the non-null values in a numeric column fall into the
         predefined interval
@@ -462,6 +463,55 @@ class Check:
         )
         return self.satisfies(
             predicate, f"{column} between {lower_bound} and {upper_bound}", hint=hint
+        )
+
+    def is_unique(
+        self, column: str, hint: Optional[str] = None
+    ) -> "CheckWithLastConstraintFilterable":
+        """
+        Creates a constraint that asserts on a column uniqueness.
+
+        Parameters
+        ----------
+
+        column:
+            Column to run the assertion on
+        hint:
+            A hint to provide additional context why a constraint could have failed
+
+        """
+
+        return self._add_filterable_constraint(
+            lambda filter_: uniqueness_constraint([column], is_one, filter_, hint)
+        )
+
+    def has_uniqueness(
+        self,
+        columns: Union[Sequence[str], str],
+        assertion: Callable[[float], bool],
+        hint: Optional[str] = None,
+    ):
+        """
+        Creates a constraint that asserts on uniqueness in a single or combined
+        set of key columns.
+
+
+        Parameters
+        ----------
+        columns:
+            Column or columns to run the assertion on
+        assertion:
+            Callable that receives a double input parameter and returns a boolean.
+            The input is the fraction of unique values in columns.
+        """
+
+        if isinstance(columns, str):
+            columns = [columns]
+
+        return self._add_filterable_constraint(
+            lambda filter_: uniqueness_constraint(
+                columns, assertion, filter_, hint=hint
+            )
         )
 
     def evaluate(self, context: AnalyzerContext) -> CheckResult:

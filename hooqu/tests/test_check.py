@@ -1,7 +1,8 @@
 from hooqu.analyzers import Maximum, Mean, Minimum, Quantile, StandardDeviation, Sum
 from hooqu.analyzers.runners import AnalyzerContext
 from hooqu.analyzers.runners.analysis_runner import do_analysis_run
-from hooqu.checks import Check, CheckLevel, CheckStatus
+from hooqu.checks import Check, CheckLevel, CheckStatus, is_one
+from hooqu.constraints import ConstraintStatus
 
 
 def run_checks(data, *checks) -> AnalyzerContext:
@@ -319,3 +320,65 @@ class TestSatifiesCheck:
         assert_evals_to(
             numeric_range_check9, numeric_range_results, CheckStatus.SUCCESS
         )
+
+
+class TestUniquenessCheck:
+    def test_return_the_correct_check_status(self, df_with_unique_columns):
+        df = df_with_unique_columns
+
+        check = (
+            Check(CheckLevel.ERROR, "group-1-u")
+            .has_uniqueness("nonUnique", lambda fraction: fraction == 0.5)
+            .has_uniqueness("nonUnique", lambda fraction: fraction < 0.6)
+            .has_uniqueness(
+                ("halfUniqueCombinedWithNonUnique", "nonUnique"),
+                lambda fraction: fraction == 0.5,
+            )
+            .has_uniqueness(("onlyUniqueWithOtherNonUnique", "nonUnique"), is_one,)
+            .has_uniqueness("unique", is_one)
+            .has_uniqueness("uniqueWithNulls", is_one)
+            .has_uniqueness(("nonUnique", "halfUniqueCombinedWithNonUnique"), is_one)
+            .where("nonUnique > 0")
+            .has_uniqueness(
+                ("nonUnique", "halfUniqueCombinedWithNonUnique"), is_one, "hint"
+            )
+            .where("nonUnique > 0")
+            .has_uniqueness("halfUniqueCombinedWithNonUnique", is_one)
+            .where("nonUnique > 0")
+            .has_uniqueness("halfUniqueCombinedWithNonUnique", is_one, "hint")
+            .where("nonUnique > 0")
+        )
+
+        context = run_checks(df, check)
+
+        result = check.evaluate(context)
+
+        assert result.status == CheckStatus.SUCCESS
+
+        statuses = [cr.status for cr in result.constraint_results]
+
+        #  Half of nonUnique column are duplicates
+        assert statuses[0] == ConstraintStatus.SUCCESS
+        assert statuses[1] == ConstraintStatus.SUCCESS
+
+        # Half of the 2 columns are duplicates as well.
+        assert statuses[2] == ConstraintStatus.SUCCESS
+
+        # Both next 2 cases are actually unique so should meet threshold
+        assert statuses[3] == ConstraintStatus.SUCCESS
+        assert statuses[4] == ConstraintStatus.SUCCESS
+
+        # Nulls are duplicated so this will not be unique
+        assert statuses[5] == ConstraintStatus.SUCCESS
+
+        # Multi-column uniqueness, duplicates filtered out
+        assert statuses[6] == ConstraintStatus.SUCCESS
+
+        # Multi-column uniqueness with hint, duplicates filtered out
+        assert statuses[7] == ConstraintStatus.SUCCESS
+
+        # Single-column uniqueness, duplicates filtered out
+        assert statuses[8] == ConstraintStatus.SUCCESS
+
+        # Single-column uniqueness with hint, duplicates filtered out
+        assert statuses[9] == ConstraintStatus.SUCCESS
