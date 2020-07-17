@@ -3,9 +3,8 @@
 from dataclasses import dataclass
 from typing import Optional, Sequence
 
-from .analyzer import AggDefinition
+from .analyzer import COUNT_COL, AggDefinition
 from .grouping_analyzers import ScanShareableFrequencyBasedAnalyzer
-from .analyzer import COUNT_COL
 
 
 # I need to do this due to https://github.com/python/mypy/issues/5374
@@ -27,7 +26,7 @@ class Uniqueness(ScanShareableFrequencyBasedAnalyzer, _UniquenessDataClassMixin)
         self.where = where
 
     def _aggregation_functions(self, num_rows: int) -> AggDefinition:
-
         def uniqueness_aggregation(s):
             return (s == 1).astype(int).sum() / num_rows
+
         return {COUNT_COL: {uniqueness_aggregation}}
