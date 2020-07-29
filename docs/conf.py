@@ -69,7 +69,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'hooqu'
-copyright = u"2019, Miguel Cabrera"
+copyright = u"2019, 2020 Miguel Cabrera"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -92,7 +92,7 @@ release = hooqu.__version__
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**tests**']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
