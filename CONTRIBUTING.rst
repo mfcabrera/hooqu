@@ -57,12 +57,17 @@ If you are proposing a feature:
 Get Started!
 ------------
 
-Ready to contribute? Here's how to set up `hooqu` for local development.
+Ready to contribute?
+--------------------
+
+Reading the :doc:`key concepts in the code base <key_concepts>` document
+will make understanding the code an easier task. After that you can set up `hooqu`
+for local development.
 
 1. Fork the `hooqu` repo on GitHub.
 2. Clone your fork locally::
 
-    $ git clone git@github.com:your_name_here/hooqu.git
+    $ git clone git@github.com:mfcabrera/hooqu.git
 
 3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
 
@@ -101,7 +106,7 @@ Before you submit a pull request, check that it meets these guidelines:
 2. If the pull request adds functionality, the docs should be updated. Put
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
-3. The pull request should work for Python 2.6, 2.7, 3.3, 3.4 and 3.5, and for PyPy. Check
+3. The pull request should work for Python >= 3.7. Check
    https://travis-ci.org/mfcabrera/hooqu/pull_requests
    and make sure that the tests pass for all supported Python versions.
 
@@ -110,4 +115,4 @@ Tips
 
 To run a subset of tests::
 
-$ py.test tests.test_hooqu
+$ py.test hooqu.tests.test_blah
