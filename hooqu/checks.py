@@ -41,7 +41,7 @@ class CheckResult:
     constraint_results: Sequence[ConstraintResult] = field(default_factory=tuple)
 
 
-def _is_one(value: Union[float, int]) -> bool:
+def is_one(value: Union[float, int]) -> bool:
     return value == 1
 
 
@@ -183,7 +183,7 @@ class Check:
 
         """
         return self._add_filterable_constraint(
-            lambda filter_: completeness_constraint(column, _is_one, filter_, hint)
+            lambda filter_: completeness_constraint(column, is_one, filter_, hint)
         )
 
     def has_completeness(
@@ -326,7 +326,7 @@ class Check:
         self,
         column_condition: str,
         constraint_name: str,
-        assertion: Callable[[float], bool] = _is_one,
+        assertion: Callable[[float], bool] = is_one,
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
 
@@ -339,7 +339,7 @@ class Check:
     def is_non_negative(
         self,
         column: str,
-        assertion: Callable[[float], bool] = _is_one,
+        assertion: Callable[[float], bool] = is_one,
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
         """
@@ -367,7 +367,7 @@ class Check:
     def is_positive(
         self,
         column: str,
-        assertion: Callable[[float], bool] = _is_one,
+        assertion: Callable[[float], bool] = is_one,
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
         """
@@ -396,7 +396,7 @@ class Check:
         self,
         column: str,
         allowed_values: Sequence[str],
-        assertion: Callable[[float], bool] = _is_one,
+        assertion: Callable[[float], bool] = is_one,
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
         """
@@ -482,7 +482,7 @@ class Check:
         """
 
         return self._add_filterable_constraint(
-            lambda filter_: uniqueness_constraint([column], _is_one, filter_, hint)
+            lambda filter_: uniqueness_constraint([column], is_one, filter_, hint)
         )
 
     def has_uniqueness(
