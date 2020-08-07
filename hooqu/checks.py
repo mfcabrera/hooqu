@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, IntEnum
 from typing import Any, Callable, List, Optional, Sequence, Set, Tuple, Union, cast
 
 from hooqu.analyzers import Analyzer
@@ -28,7 +28,7 @@ class CheckLevel(Enum):
     ERROR = 1
 
 
-class CheckStatus(Enum):
+class CheckStatus(IntEnum):
     SUCCESS = 0
     WARNING = 1
     ERROR = 2
