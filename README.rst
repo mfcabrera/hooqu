@@ -9,6 +9,8 @@ Hooqu - Unit Tests for Data
 .. image:: https://readthedocs.org/projects/hooqu/badge/?version=latest
         :target: https://hooqu.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
+.. image:: https://codecov.io/gh/mfcabrera/hooqu/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/mfcabrera/hooqu
 .. image:: https://pyup.io/repos/github/mfcabrera/hooqu/shield.svg
      :target: https://pyup.io/repos/github/mfcabrera/hooqu/
      :alt: Updates
