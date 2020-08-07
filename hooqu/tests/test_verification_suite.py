@@ -1,9 +1,6 @@
 from itertools import permutations
-from typing import List
-
 from hooqu.checks import Check, CheckLevel, CheckStatus
 from hooqu.verification_suite import VerificationSuite
-from hooqu.analyzers import Uniqueness
 
 
 def assert_status_for(data, expected_status: CheckStatus, *checks):
