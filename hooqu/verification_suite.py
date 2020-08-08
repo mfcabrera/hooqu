@@ -8,6 +8,7 @@ from hooqu.analyzers import Analyzer
 from hooqu.analyzers.runners import AnalyzerContext
 from hooqu.analyzers.runners.analysis_runner import do_analysis_run
 from hooqu.checks import Check, CheckResult, CheckStatus
+from hooqu.dataframe import DataFrameLike
 from hooqu.metrics import Metric
 
 logger = logging.getLogger(__name__)
@@ -27,8 +28,6 @@ class VerificationRunBuilder:
         self._checks: List[Check] = []
         self._required_analyzers: Optional[Tuple[Analyzer, ...]] = None
 
-    # FIXME: This does not make a lot of sense now
-    # but let's keep it like this for API compatibility
     def run(self) -> VerificationResult:
 
         return VerificationSuite().do_verification_run(
@@ -36,12 +35,80 @@ class VerificationRunBuilder:
         )
 
     def add_check(self, check: Check) -> "VerificationRunBuilder":
+        """
+        Add a single check to the run.
+
+        Parameters
+        ----------
+
+        check:
+             A check object to be executed during the run
+        """
         self._checks.append(check)
+        return self
+
+    def add_checks(self, checks: Sequence[Check]) -> "VerificationRunBuilder":
+        """
+        Add multiple checks to the run.
+
+        Parameters
+        ----------
+
+        checks:
+             A sequence of check objects to be executed during the run
+        """
+        self._checks.extend(checks)
         return self
 
 
 class VerificationSuite:
-    # TODO: make private/protected
+    def __init__(self):
+        self._checks: List[Check] = []
+        self._required_analyzers: Optional[Tuple[Analyzer, ...]] = None
+
+    def add_check(self, check: Check) -> "VerificationSuite":
+        """
+        Add a single check to the run.
+
+        Parameters
+        ----------
+
+        check:
+             A check object to be executed during the run
+        """
+
+        self._checks.append(check)
+        return self
+
+    def add_checks(self, checks: Sequence[Check]) -> "VerificationSuite":
+        """
+        Add multiple checks to the run.
+
+        Parameters
+        ----------
+
+        checks:
+             A sequence of check objects to be executed during the run
+        """
+
+        self._checks.extend(checks)
+        return self
+
+    def run(self, data: DataFrameLike) -> VerificationResult:
+        """
+        Runs all check groups and returns the verification result.
+        Verification result includes all the metrics computed during the run.
+
+        Parameters
+        ----------
+
+        data:
+             tabular data on which the checks should be verified
+        """
+
+        return self.do_verification_run(
+            data, self._checks, self._required_analyzers, None, None, None, None,
+        )
 
     def on_data(self, data):
         return VerificationRunBuilder(data)
@@ -105,7 +172,6 @@ class VerificationSuite:
     ) -> VerificationResult:
 
         check_results = {c: c.evaluate(analysis_context) for c in checks}
-
         if not check_results:
             verification_status = CheckStatus.SUCCESS
         else:

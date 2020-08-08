@@ -1,2 +1,0 @@
-hooqu.tests package
-===================

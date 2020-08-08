@@ -47,12 +47,12 @@ def df_with_numeric_values():
     # att2 is always bigger than att1
     return pd.DataFrame(
         [
-            ("1", 1, 0, 0),
-            ("2", 2, 0, 0),
-            ("3", 3, 0, 0),
-            ("4", 4, 5, 4),
-            ("5", 5, 6, 6),
-            ("6", 6, 7, 7),
+            (1, 1, 0, 0),
+            (2, 2, 0, 0),
+            (3, 3, 0, 0),
+            (4, 4, 5, 4),
+            (5, 5, 6, 6),
+            (6, 6, 7, 7),
         ],
         columns=("item", "att1", "att2", "att3"),
     )
@@ -62,12 +62,12 @@ def df_with_numeric_values():
 def df_comp_incomp():
     return pd.DataFrame(
         [
-            ("1", "a", "f"),
-            ("2", "b", "d"),
-            ("3", "a", None),
-            ("4", "a", "f"),
-            ("5", "b", None),
-            ("6", "a", "f"),
+            (1, "a", "f"),
+            (2, "b", "d"),
+            (3, "a", None),
+            (4, "a", "f"),
+            (5, "b", None),
+            (6, "a", "f"),
         ],
         columns=("item", "att1", "att2"),
     )

@@ -8,19 +8,14 @@ Installation
 Stable release
 --------------
 
-To install hooqu, run this command in your terminal:
+Hooqu requires Pandas >= 1.0 and Python >= 3.7. To install via pip use:
 
 .. code-block:: console
 
     $ pip install hooqu
 
-This is the preferred method to install hooqu, as it will always install the most recent stable release.
-
-If you don't have `pip`_ installed, this `Python installation guide`_ can guide
-you through the process.
-
-.. _pip: https://pip.pypa.io
-.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
+This is the preferred method to install hooqu, as it will always
+install the most recent stable release.
 
 
 From sources

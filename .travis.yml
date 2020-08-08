@@ -45,3 +45,7 @@ script: tox
 #     tags: true
 #     repo: mfcabrera/hooqu
 #     condition: $TOXENV == py27
+
+
+after_success:
+    bash <(curl -s https://codecov.io/bash)
