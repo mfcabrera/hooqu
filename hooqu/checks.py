@@ -359,7 +359,7 @@ class Check:
         # coalescing column to not count NULL values as non-compliant
         return self.satisfies(
             f"`{column}`.fillna(0) >= 0",
-            f"{column} is non-negative",
+            f"`{column}` is non-negative",
             assertion,
             hint=hint,
         )
