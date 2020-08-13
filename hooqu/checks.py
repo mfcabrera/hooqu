@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 from enum import Enum, IntEnum
 from typing import Any, Callable, List, Optional, Sequence, Set, Tuple, Union, cast
 
+import numpy as np
+
 from hooqu.analyzers import Analyzer
 from hooqu.analyzers.runners import AnalyzerContext
 from hooqu.constraints import (
@@ -420,14 +422,16 @@ class Check:
         """
 
         allowed_values = list(allowed_values)
+        is_numeric_sequence = all(
+            isinstance(value, (int, np.integer)) for value in allowed_values
+        )
 
         if not allowed_values:
             raise ValueError("Empty list of allowed values used")
 
-        import numpy as np
-        if not isinstance(allowed_values[0], (str, int, np.int32)):
+        if not isinstance(allowed_values[0], str) and not is_numeric_sequence:
             raise ValueError(
-                "The type of allowed values should be 'str' or 'int' but got"
+                "The type of allowed values should be string or integer but got"
                 f" '{type(allowed_values[0])}'"
             )
 
