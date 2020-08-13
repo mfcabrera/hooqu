@@ -401,7 +401,7 @@ class Check:
     ) -> "CheckWithLastConstraintFilterable":
         """
         Asserts that every non-null value in a column is contained in a set of
-        predefined values
+        predefined values. Note that this only works on a set of string sequences.
 
         Parameters
         ----------
@@ -417,7 +417,18 @@ class Check:
 
         """
 
-        predicate = f"`{column}`.isna() or `{column}`.isin({allowed_values})"
+        allowed_values = list(allowed_values)
+
+        if not allowed_values:
+            raise ValueError("Empty list of allowed values used")
+
+        if not isinstance(allowed_values[0], str):
+            raise ValueError(
+                "The type of allowed values should be 'str' got"
+                f" '{type(allowed_values[0])}'"
+            )
+
+        predicate = f"`{column}`.isna or `{column}`.isin({allowed_values})"
         return self.satisfies(
             predicate, f"{column} contained in {allowed_values}", assertion, hint
         )
