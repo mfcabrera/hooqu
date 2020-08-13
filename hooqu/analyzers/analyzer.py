@@ -145,7 +145,7 @@ class Analyzer(ABC, Generic[S, M]):
         return f"{self.name}({self.instance})"
 
 
-@dataclass(frozen=True)  # type: ignore
+@dataclass(frozen=True, repr=False)  # type: ignore
 class NonScanAnalyzer(Analyzer[S, DoubleMetric]):
     """Analyzer that does not need to run any aggregation and can extract
     the information straight from the dataframe. This is a special
@@ -181,7 +181,7 @@ class NonScanAnalyzer(Analyzer[S, DoubleMetric]):
         raise NotImplementedError
 
 
-@dataclass(frozen=True)  # type: ignore
+@dataclass(frozen=True, repr=False)  # type: ignore
 class ScanShareableAnalyzer(Analyzer[S, M]):
     """An analyzer that runs a set of aggregation functions over the data,
     can share scans over the data """
