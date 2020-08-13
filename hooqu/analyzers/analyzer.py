@@ -1,3 +1,4 @@
+import traceback
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import (
@@ -56,7 +57,6 @@ class DoubledValuedState(State[S]):
 
 # Analyzer module
 class Analyzer(ABC, Generic[S, M]):
-
     @abstractmethod
     def compute_state_from(self, data: DataFrameLike) -> Optional[S]:
         pass
@@ -142,7 +142,10 @@ class Analyzer(ABC, Generic[S, M]):
         )
 
     def __repr__(self,):
-        return f"{self.name}({self.instance})"
+        instance_summary = self.instance
+        if len(self.instance) > 120:
+            instance_summary = f"{self.instance[:40]} ... {self.instance[-40:]}"
+        return f"{self.name}({instance_summary})"
 
 
 @dataclass(frozen=True, repr=False)  # type: ignore
@@ -152,6 +155,7 @@ class NonScanAnalyzer(Analyzer[S, DoubleMetric]):
     implementation of Hooqu
     for the Size Analyzer.
     """
+
     name: str
     instance: str
     entity: Entity = Entity.COLUMN
@@ -185,6 +189,7 @@ class NonScanAnalyzer(Analyzer[S, DoubleMetric]):
 class ScanShareableAnalyzer(Analyzer[S, M]):
     """An analyzer that runs a set of aggregation functions over the data,
     can share scans over the data """
+
     name: str
     instance: str
     entity: Entity = Entity.COLUMN
@@ -267,6 +272,13 @@ def metric_from_value(
 def metric_from_failure(
     ex: Exception, name: str, instance: str, entity: Entity
 ) -> DoubleMetric:
+
+    # sometimes AssertionError does not contain any message let's add some context
+    if isinstance(ex, AssertionError):
+        summary = traceback.extract_tb(ex.__traceback__)
+        # get the last ones
+        ex.args += tuple(summary.format()[-2:])
+
     return DoubleMetric(entity, name, instance, Failure(ex))
 
 

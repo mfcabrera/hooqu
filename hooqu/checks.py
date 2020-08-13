@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from dataclasses import dataclass, field
 from enum import Enum, IntEnum
 from typing import Any, Callable, List, Optional, Sequence, Set, Tuple, Union, cast
@@ -395,7 +397,7 @@ class Check:
     def is_contained_in(
         self,
         column: str,
-        allowed_values: Sequence[str],
+        allowed_values: Sequence[Union[str, int]],
         assertion: Callable[[float], bool] = is_one,
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
@@ -422,13 +424,14 @@ class Check:
         if not allowed_values:
             raise ValueError("Empty list of allowed values used")
 
-        if not isinstance(allowed_values[0], str):
+        import numpy as np
+        if not isinstance(allowed_values[0], (str, int, np.int32)):
             raise ValueError(
-                "The type of allowed values should be 'str' got"
+                "The type of allowed values should be 'str' or 'int' but got"
                 f" '{type(allowed_values[0])}'"
             )
 
-        predicate = f"`{column}`.isna or `{column}`.isin({allowed_values})"
+        predicate = f"`{column}`.isna() or `{column}`.isin({allowed_values})"
         return self.satisfies(
             predicate, f"{column} contained in {allowed_values}", assertion, hint
         )
