@@ -18,7 +18,7 @@ with open('requirements_dev.txt') as f:
 setup(
     name='hooqu',
     version='0.1.0',
-    description="Data unit testing for you Python DataFrames",
+    description="Data unit testing for your Python DataFrames",
     long_description=readme + '\n\n' + history,
     author="Miguel Cabrera",
     author_email='mfcabrera@gmail.com',
