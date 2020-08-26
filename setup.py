@@ -34,6 +34,7 @@ setup(
     keywords='hooqu',
     python_requires='>=3.7',
     classifiers=[
+        'Programming Language :: Python :: 3',
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',

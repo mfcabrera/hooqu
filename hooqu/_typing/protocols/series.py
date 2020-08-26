@@ -10,7 +10,7 @@
 from typing import IO, Any, Callable, Hashable, Optional
 
 import numpy as np  # type: ignore[import]
-from typing_extensions import Protocol
+from typing import Protocol
 
 groupby_generic = Any
 

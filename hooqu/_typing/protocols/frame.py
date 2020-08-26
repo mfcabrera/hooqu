@@ -8,8 +8,7 @@
 # flake8: noqa
 
 import numpy as np  # type: ignore[import]
-from typing import Any, Hashable, IO, Iterable, List, Optional, Sequence, Tuple, Union
-from typing_extensions import Protocol
+from typing import Any, Hashable, IO, Iterable, List, Optional, Sequence, Tuple, Union, Protocol
 from .series import SeriesLike
 
 Axes = Any
