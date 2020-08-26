@@ -20,6 +20,7 @@ setup(
     version='0.1.0',
     description="Data unit testing for your Python DataFrames",
     long_description=readme + '\n\n' + history,
+    long_description_content_type='text/x-rst',
     author="Miguel Cabrera",
     author_email='mfcabrera@gmail.com',
     url='https://github.com/mfcabrera/hooqu',
@@ -39,7 +40,8 @@ setup(
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Topic :: Scientific/Engineering'
+        'Topic :: Scientific/Engineering',
+        'Topic :: System :: Monitoring'
     ],
     test_suite='tests',
     extras_require={
