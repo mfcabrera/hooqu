@@ -12,6 +12,7 @@ Versioning <https://semver.org/spec/v2.0.0.html>`__.
 --------------------
 
 -  Initial release, the following checks are available:
+
    - has_completeness
    - has_max
    - has_mean
