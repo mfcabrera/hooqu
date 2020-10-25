@@ -10,6 +10,7 @@ from hooqu.analyzers.grouping_analyzers import FrequenciesAndNumRows
 from hooqu.analyzers.maximum import Maximum, MaxState
 from hooqu.analyzers.mean import Mean, MeanState
 from hooqu.analyzers.minimum import Minimum, MinState
+from hooqu.analyzers.pattern_match import PatternMatch
 from hooqu.analyzers.quantile import Quantile, QuantileState
 from hooqu.analyzers.size import NumMatches, Size
 from hooqu.analyzers.standard_deviation import StandardDeviation, StandardDeviationState
@@ -39,4 +40,5 @@ __all__ = [
     "StandardDeviationState",
     "Uniqueness",
     "FrequenciesAndNumRows",
+    "PatternMatch",
 ]

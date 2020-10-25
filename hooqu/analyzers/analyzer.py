@@ -1,3 +1,4 @@
+import logging
 import traceback
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -13,12 +14,13 @@ from typing import (
     Union,
 )
 
-from tryingsnake import Failure, Success
-
 from hooqu.dataframe import DataFrameLike
 from hooqu.metrics import DoubleMetric, Entity, Metric
+from tryingsnake import Failure, Success
 
 from .preconditions import has_column
+
+logger = logging.getLogger("hooqu")
 
 COUNT_COL = "org_hooqu_count"
 
@@ -253,7 +255,9 @@ class StandardScanShareableAnalyzer(ScanShareableAnalyzer[S, DoubleMetric]):
             data = data.query(self.where)
 
         result = data.agg(aggregations)
+        logger.debug(result)
         # Now make sense of the results
+
         return self.from_aggregation_result(result, 0)
 
     def to_failure_metric(self, ex: Exception) -> DoubleMetric:

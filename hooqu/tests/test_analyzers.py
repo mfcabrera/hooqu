@@ -1,17 +1,18 @@
+# coding: utf-8
+
 import math
 
+import hooqu.patterns as hpatterns
 import numpy as np
 import pandas as pd
 import pytest
-from hypothesis import example, given
-from tryingsnake import Failure, Success
-
 from hooqu.analyzers import (
     Completeness,
     Compliance,
     Maximum,
     Mean,
     Minimum,
+    PatternMatch,
     Quantile,
     Size,
     StandardDeviation,
@@ -19,6 +20,8 @@ from hooqu.analyzers import (
 )
 from hooqu.metrics import DoubleMetric, Entity
 from hooqu.tests.fixtures import df_strategy
+from hypothesis import example, given
+from tryingsnake import Failure, Success
 
 
 class TestSizeAnalyzer:
@@ -255,3 +258,72 @@ class TestComplianceAnalyzer:
         df = df_with_numeric_values
         result = Compliance("rule1", "attNoSuchColumn").calculate(df)
         assert result.value.isFailure
+
+
+class TestPatternMatchAnalyzer:
+    def test_computes_correct_metrics(self):
+        df = pd.DataFrame({"col": ["miguel", "benjamin", "miguelito"]})
+
+        assert PatternMatch("col", r"^miguel").calculate(df) == DoubleMetric(
+            entity=Entity.COLUMN,
+            name="PatternMatch",
+            instance="col",
+            value=Success(0.6666666666666666),
+        )
+
+    def test_not_match_doubles_in_nullable_column(self,):
+        col = "some"
+        df = pd.DataFrame({col: [1.1, None, 3.2, 4.4]})
+        result = PatternMatch(col, r"\d\.\d").calculate(df)
+        assert result.value.isFailure
+
+    def test_match_email_addresses(self):
+        col = "some"
+        df = pd.DataFrame({col: ["someone@somewhere.org", "someone@else"]})
+        assert PatternMatch(col, hpatterns.EMAIL).calculate(df).value == Success(0.5)
+
+    def test_match_credit_card_numbers(self):
+
+        maybe_cc_numbers = [
+            "378282246310005",  # AMEX
+            "6011111111111117",  # Discover
+            "6011 1111 1111 1117",  # Discover spaced
+            "6011-1111-1111-1117",  # Discover dashed
+            "5555555555554444",  # MasterCard
+            "5555 5555 5555 4444",  # MasterCard spaced
+            "5555-5555-5555-4444",  # MasterCard dashed
+            "4111111111111111",  # Visa
+            "4111 1111 1111 1111",  # Visa spaced
+            "4111-1111-1111-1111",  # Visa dashed
+            "0000111122223333",  # not really a CC number
+            "000011112222333",  # not really a CC number
+            "00001111222233",  # not really a CC number
+        ]
+
+        df = pd.DataFrame({"some": maybe_cc_numbers})
+        result = PatternMatch("some", hpatterns.CREDITCARD).calculate(df)
+        assert result.value == Success(10.0 / 13.0)
+
+    def test_match_urls(self):
+
+        maybe_urls = [
+            "http://foo.com/blah_blah",
+            "http://foo.com/blah_blah_(wikipedia)",
+            "http://foo.bar/?q=Test%20URL-encoded%20stuff",
+
+            "http://➡.ws/䨹",
+            "http://⌘.ws/",
+            "http://☺.damowmow.com/",
+            "http://例子.测试",
+
+            "https://foo_bar.example.com/",
+            "http://userid@example.com:8080",
+            "http://foo.com/blah_(wikipedia)#cite-1",
+
+            "http://../",  # not really a valid URL
+            "h://test",  # not really a valid URL
+            "http://.www.foo.bar/"  # not really a valid URL
+        ]
+        df = pd.DataFrame({"some": maybe_urls})
+        result = PatternMatch("some", hpatterns.URL).calculate(df)
+        assert result.value == Success(10 / 13.0)

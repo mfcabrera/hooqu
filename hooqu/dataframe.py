@@ -4,10 +4,10 @@ serve as an interface to specific implementation of dataframes. For now the supp
 is focused solely on Pandas.
 """
 from functools import partial
-from typing import Callable
+from typing import Callable, Pattern, Union
 
 import pandas as pd
-from pandas.api.types import is_numeric_dtype
+from pandas.api.types import is_numeric_dtype, is_string_dtype
 
 from ._typing import DataFrameLike # noqa:
 
@@ -31,6 +31,19 @@ def generic_is_numeric(column: str):
     return partial(f, column=column)
 
 
+def generic_is_string(column: str):
+    def f(df, column):
+        if not is_string_dtype(df[column]):
+            dtype = df[column].dtype
+            msg = (
+                f"Expected type of column $column to be string"
+                f" but found {dtype} instead!"
+            )
+            raise ValueError(msg)
+
+    return partial(f, column=column)
+
+
 def count_not_null(data: pd.Series) -> int:
     return data.notnull().astype(int).sum()
 
@@ -39,6 +52,17 @@ def count_all(series):
     if not isinstance(series, pd.Series):
         raise TypeError("Expected a Series")
     return len(series)
+
+
+def contains_regex(regex: Union[Pattern, str]) -> Callable:
+    def _contains_regex(series):
+        if not isinstance(series, pd.Series):
+            raise TypeError("Expected a Series")
+
+        return series.str.match(regex).sum()
+    # Hacky way to get the desired column name on the returned dataframex
+    _contains_regex.__name__ = "contains_regex"
+    return _contains_regex
 
 
 def pop_variance(series):
