@@ -59,7 +59,7 @@ def contains_regex(regex: Union[Pattern, str]) -> Callable:
         if not isinstance(series, pd.Series):
             raise TypeError("Expected a Series")
 
-        return series.str.match(regex).sum()
+        return series.str.contains(regex).sum()
     # Hacky way to get the desired column name on the returned dataframex
     _contains_regex.__name__ = "contains_regex"
     return _contains_regex
