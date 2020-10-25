@@ -126,8 +126,9 @@ If we run the example, we get the following output:
 
    We found errors in the data
    CompletenessConstraint(Completeness(productName)): Value 0.8 does not meet the constraint requirement.
+   PatternMatchConstraint(containsURL(description)): Value 0.4 does not meet the constraint requirement.
 
-The test found that our assumptions are violated! Only 4 out of 5 (80%) of the values of the productName attribute are non-null.
+The test found that our assumptions are violated! Only 4 out of 5 (80%) of the values of the productName attribute are non-null and only 2 out of 5 (40%) values of the description attribute contained a url.
 Fortunately, we ran a test and found the errors, somebody should immediately fix the data :)
 
 
