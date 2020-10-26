@@ -345,6 +345,28 @@ class Check:
         assertion: Callable[[float], bool] = is_one,
         hint: Optional[str] = None,
     ) -> "CheckWithLastConstraintFilterable":
+        """
+
+        Creates a constraint that evaluates on the column_condition
+        and executes the assertion.
+        This is useful for complex or custom checks that are better described
+        using a valid expression.
+
+        Parameters
+        -----------
+
+        column_condition:
+            The column expression to be evaluated. If using a Pandas data-frame
+            this expression is evaluated with ``pandas.eval``.
+        constraint_name:
+            A name that summarizes the check being made. This name is being used to name the
+            metrics for the analysis being done.
+        assertion:
+            Callable that receives a float input parameter and returns a boolean.
+        hint:
+            A hint to provide additional context why a constraint could have failed
+
+        """
 
         return self._add_filterable_constraint(
             lambda filter_: compliance_constraint(
