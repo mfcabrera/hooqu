@@ -11,6 +11,7 @@ from hooqu.constraints.constraints import (
     max_constraint,
     mean_constraint,
     min_constraint,
+    pattern_match_constraint,
     quantile_constraint,
     size_constraint,
     standard_deviation_constraint,
@@ -20,6 +21,7 @@ from hooqu.constraints.constraints import (
 
 __all__ = [
     "completeness_constraint",
+    "pattern_match_constraint",
     "max_constraint",
     "mean_constraint",
     "min_constraint",

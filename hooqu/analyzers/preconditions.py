@@ -2,7 +2,7 @@
 
 from typing import Callable, Optional, Sequence
 
-from hooqu.dataframe import DataFrameLike, generic_is_numeric
+from hooqu.dataframe import DataFrameLike, generic_is_numeric, generic_is_string
 
 
 class NotColumnSpecifiedException(Exception):
@@ -45,3 +45,7 @@ def at_least_one(columns: Sequence[str]) -> Callable[[DataFrameLike], None]:
                 "At least one column needs to be specified!"
             )
     return f
+
+
+def is_string(column: str):
+    return generic_is_string(column)

@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Sequence
+from typing import Callable, Optional, Pattern, Sequence, Union
 
 from hooqu.analyzers import (
     Completeness,
@@ -12,6 +12,7 @@ from hooqu.analyzers import (
     MinState,
     NumMatches,
     NumMatchesAndCount,
+    PatternMatch,
     Quantile,
     QuantileState,
     Size,
@@ -226,3 +227,45 @@ def uniqueness_constraint(
     )
 
     return NamedConstraint(constraint, f"UniquenessConstraint({uniqueness})")
+
+
+def pattern_match_constraint(
+    column: str,
+    pattern: Union[str, Pattern],
+    assertion: Callable[[float], bool],
+    where: Optional[str] = None,
+    name: Optional[str] = None,
+    hint: Optional[str] = None,
+) -> Constraint:
+    """
+    Runs given regex compliance analysis on the given column(s) and executes the
+    assertion.
+
+    Parameters
+    ----------
+    column:
+          The column to run the assertion on
+    pattern:
+        The regex pattern to check compliance for (either string or pattern instance)
+    where:
+        Additional filter to apply before the analyzer is run.
+    name:
+        A name that summarizes the check being made. This name is being used
+        to name the metrics for the analysis being done.
+    hint:
+        A hint to provide additional context why a constraint could have failed
+    """
+
+    pattern_match = PatternMatch(column, pattern, where)
+
+    constraint = AnalysisBasedConstraint[NumMatchesAndCount, float, float](
+        pattern_match, assertion, hint=hint  # type: ignore[arg-type]
+    )
+
+    name = (
+        f"PatternMatchConstraint({name})"
+        if name
+        else f"PatternMatchConstraint({column}, {pattern})"
+    )
+
+    return NamedConstraint(constraint, name)

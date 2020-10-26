@@ -29,7 +29,7 @@ which measure data quality datasets.
 Hooqu is a "spiritual" Python port of `Apache Deequ <https://github.com/awslabs/deequ/>`_ and
 is currently in an experimental state. I am happy to receive feedback and contributions.
 
-The main motivation of Hooqu is to enable data science projects to discover the quality of their input/output data using a similar API to the on found in Deequ, allowing to share 
+The main motivation of Hooqu is to enable data science projects to discover the quality of their input/output data using a similar API to the on found in Deequ, allowing to share
 the same vocabulary of checks between different teams.
 
 Install
@@ -92,7 +92,9 @@ In code this looks as follows:
               .is_complete("productName")  # should never be None/Null
               .is_contained_in("priority", ("high", "low"))
               .is_non_negative("numViews")
-              # .contains_url("description", lambda d: d >= 0.5) (NOT YET IMPLEMENTED)
+              # at least half of the descriptions should contain a url
+              .contains_url("description", lambda d: d >= 0.5)
+              # half of the items should have less than 10 views
               .has_quantile("numViews", 0.5, lambda v: v <= 10)
           )
           .run()
@@ -124,8 +126,9 @@ If we run the example, we get the following output:
 
    We found errors in the data
    CompletenessConstraint(Completeness(productName)): Value 0.8 does not meet the constraint requirement.
+   PatternMatchConstraint(containsURL(description)): Value 0.4 does not meet the constraint requirement.
 
-The test found that our assumptions are violated! Only 4 out of 5 (80%) of the values of the productName attribute are non-null.
+The test found that our assumptions are violated! Only 4 out of 5 (80%) of the values of the productName attribute are non-null and only 2 out of 5 (40%) values of the description attribute contained a url.
 Fortunately, we ran a test and found the errors, somebody should immediately fix the data :)
 
 

@@ -2,10 +2,21 @@
 
 from dataclasses import dataclass, field
 from enum import Enum, IntEnum
-from typing import Any, Callable, List, Optional, Sequence, Set, Tuple, Union, cast
+from typing import (
+    Any,
+    Callable,
+    List,
+    Optional,
+    Pattern,
+    Sequence,
+    Set,
+    Tuple,
+    Union,
+    cast,
+)
 
+import hooqu.patterns as patterns
 import numpy as np
-
 from hooqu.analyzers import Analyzer
 from hooqu.analyzers.runners import AnalyzerContext
 from hooqu.constraints import (
@@ -18,6 +29,7 @@ from hooqu.constraints import (
     max_constraint,
     mean_constraint,
     min_constraint,
+    pattern_match_constraint,
     quantile_constraint,
     size_constraint,
     standard_deviation_constraint,
@@ -521,6 +533,8 @@ class Check:
         assertion:
             Callable that receives a double input parameter and returns a boolean.
             The input is the fraction of unique values in columns.
+        hint:
+            A hint to provide additional context why a constraint could have failed
         """
 
         if isinstance(columns, str):
@@ -530,6 +544,122 @@ class Check:
             lambda filter_: uniqueness_constraint(
                 columns, assertion, filter_, hint=hint
             )
+        )
+
+    def has_pattern(
+        self,
+        column: str,
+        pattern: Union[str, Pattern],
+        assertion: Callable[[float], bool] = is_one,
+        name: Optional[str] = None,
+        hint: Optional[str] = None,
+    ):
+        """
+        Checks for pattern compliance. Given a column name and a regular
+        expression, defines a Check on the average compliance of the
+        column's values to the regular expression.
+
+
+        Parameters
+        ----------
+        column:
+            Name of the column that should be checked.
+        pattern:
+            The columns values will be checked for a match against this pattern.
+        assertion:
+            Callable that receives a double input parameter and returns a boolean.
+            The input is the fraction of unique values in columns.
+        hint:
+            A hint to provide additional context why a constraint could have failed
+
+        """
+        return self._add_filterable_constraint(
+            lambda filter_: pattern_match_constraint(
+                column, pattern, assertion, filter_, name=name, hint=hint
+            )
+        )
+
+    def contains_credit_card_number(
+        self,
+        column: str,
+        assertion: Callable[[float], bool] = is_one,
+        hint: Optional[str] = None,
+    ):
+        """
+        Check to run against the compliance of a column against a credit card pattern.
+
+        Parameters
+        ----------
+        column:
+            Name of the column that should be checked.
+        assertion:
+            Callable that receives a double input parameter and returns a boolean.
+            The input is the fraction of unique values in columns.
+        hint:
+            A hint to provide additional context why a constraint could have failed
+        """
+        return self.has_pattern(
+            column,
+            patterns.CREDITCARD,
+            assertion=assertion,
+            name=f"containsCreditCardNumber({column})",
+            hint=hint,
+        )
+
+    def contains_email(
+        self,
+        column: str,
+        assertion: Callable[[float], bool] = is_one,
+        hint: Optional[str] = None,
+    ):
+        """
+        Check to run against the compliance of a column against a against an
+        e-mail pattern.
+
+        Parameters
+        ----------
+        column:
+            Name of the column that should be checked.
+        assertion:
+            Callable that receives a double input parameter and returns a boolean.
+            The input is the fraction of unique values in columns.
+        hint:
+            A hint to provide additional context why a constraint could have failed
+        """
+        return self.has_pattern(
+            column,
+            patterns.EMAIL,
+            assertion=assertion,
+            name=f"containsEmail({column})",
+            hint=hint,
+        )
+
+    def contains_url(
+        self,
+        column: str,
+        assertion: Callable[[float], bool] = is_one,
+        hint: Optional[str] = None,
+    ):
+        """
+        Check to run against the compliance of a column against a against an
+        URL pattern.
+
+        Parameters
+        ----------
+        column:
+            Name of the column that should be checked.
+        assertion:
+            Callable that receives a double input parameter and returns a boolean.
+            The input is the fraction of unique values in columns.
+        hint:
+            A hint to provide additional context why a constraint could have failed
+        """
+        return self.has_pattern(
+            column,
+            patterns.URL,
+            assertion=assertion,
+            name=f"containsURL({column})",
+            hint=hint,
         )
 
     def evaluate(self, context: AnalyzerContext) -> CheckResult:

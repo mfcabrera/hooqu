@@ -1,3 +1,7 @@
+# coding: utf-8
+
+import hooqu.patterns as patterns
+import pandas as pd
 from hooqu.analyzers import Maximum, Mean, Minimum, Quantile, StandardDeviation, Sum
 from hooqu.analyzers.runners import AnalyzerContext
 from hooqu.analyzers.runners.analysis_runner import do_analysis_run
@@ -382,3 +386,147 @@ class TestUniquenessCheck:
 
         # Single-column uniqueness with hint, duplicates filtered out
         assert statuses[9] == ConstraintStatus.SUCCESS
+
+
+class TestPatternMatchCheck:
+    def test_has_pattern_work_with_normal_patterns(self,):
+        col = "some"
+        df = pd.DataFrame({col: ["someone@somewhere.org", "someone@else.com"]})
+
+        check = Check(CheckLevel.ERROR, "some description").has_pattern(
+            col, patterns.EMAIL
+        )
+        context = run_checks(df, check)
+        assert_evals_to(check, context, CheckStatus.SUCCESS)
+
+    def test_fail_on_mixed_data_for_email(self,):
+        col = "some"
+        df = pd.DataFrame({col: ["someone@somewhere.org", "someone@else"]})
+
+        check = Check(CheckLevel.ERROR, "some description").has_pattern(
+            col, patterns.EMAIL
+        )
+        context = run_checks(df, check)
+        assert_evals_to(check, context, CheckStatus.ERROR)
+
+    def test_on_regular_expression_patterns_for_urls(self,):
+        col = "some"
+        df = pd.DataFrame(
+            {
+                col: [
+                    "https://www.example.com/foo/?bar=baz&inga=42&quux",
+                    "https://foo.bar/baz",
+                ]
+            }
+        )
+        check = Check(CheckLevel.ERROR, "some description").has_pattern(
+            col, patterns.URL
+        )
+        context = run_checks(df, check)
+        assert_evals_to(check, context, CheckStatus.SUCCESS)
+
+    def test_work_on_regular_expression_with_filtering(self,):
+
+        df = pd.DataFrame(
+            {
+                "value": ["someone@somewhere.org", "someone@else"],
+                "type": ["valid", "invalid"],
+            }
+        )
+
+        check = Check(CheckLevel.ERROR, "some description").has_pattern(
+            "value", patterns.EMAIL, lambda v: v == 0.5
+        )
+
+        check_with_filter = (
+            Check(CheckLevel.ERROR, "some description")
+            .has_pattern("value", patterns.EMAIL, lambda v: v == 1.0)
+            .where("type == 'valid'")
+        )
+
+        context = run_checks(df, check, check_with_filter)
+
+        assert_evals_to(check, context, CheckStatus.SUCCESS)
+        assert_evals_to(check_with_filter, context, CheckStatus.SUCCESS)
+
+    def test_fails_on_mixed_data_for_url_pattern(self,):
+        col = "some"
+        df = pd.DataFrame(
+            {
+                col: [
+                    "https://www.example.com/foo/?bar=baz&inga=42&quux",
+                    "http:// shouldfail.com",
+                ],
+            }
+        )
+        check = Check(CheckLevel.ERROR, "some description").has_pattern(
+            col, patterns.URL
+        )
+        context = run_checks(df, check)
+        assert_evals_to(check, context, CheckStatus.ERROR)
+
+    def test_contains_credit_card_number(self,):
+        df = pd.DataFrame(
+            {
+                "value": ["4111 1111 1111 1111", "9999888877776666"],
+                "type": ["valid", "invalid"],
+            }
+        )
+        check = Check(CheckLevel.ERROR, "some description").contains_credit_card_number(
+            "value", lambda v: v == 0.5
+        )
+
+        check_with_filter = (
+            Check(CheckLevel.ERROR, "some description")
+            .contains_credit_card_number("value", lambda v: v == 1.0)
+            .where("type == 'valid'")
+        )
+
+        context = run_checks(df, check, check_with_filter)
+        assert_evals_to(check, context, CheckStatus.SUCCESS)
+        assert_evals_to(check_with_filter, context, CheckStatus.SUCCESS)
+
+    def test_contains_email(self,):
+        df = pd.DataFrame(
+            {
+                "value": ["someone@somewhere.org", "someone@else"],
+                "type": ["valid", "invalid"],
+            }
+        )
+        check = Check(CheckLevel.ERROR, "some description").contains_email(
+            "value", lambda v: v == 0.5
+        )
+
+        check_with_filter = (
+            Check(CheckLevel.ERROR, "some description")
+            .contains_email("value", lambda v: v == 1.0)
+            .where("type == 'valid'")
+        )
+
+        context = run_checks(df, check, check_with_filter)
+        assert_evals_to(check, context, CheckStatus.SUCCESS)
+        assert_evals_to(check_with_filter, context, CheckStatus.SUCCESS)
+
+    def test_contains_url(self,):
+        df = pd.DataFrame(
+            {
+                "value": [
+                    "https://www.example.com/foo/?bar=baz&inga=42&quux",
+                    "http:// shouldfail.com",
+                ],
+                "type": ["valid", "invalid"],
+            }
+        )
+        check = Check(CheckLevel.ERROR, "some description").contains_url(
+            "value", lambda v: v == 0.5
+        )
+
+        check_with_filter = (
+            Check(CheckLevel.ERROR, "some description")
+            .contains_url("value", lambda v: v == 1.0)
+            .where("type == 'valid'")
+        )
+
+        context = run_checks(df, check, check_with_filter)
+        assert_evals_to(check, context, CheckStatus.SUCCESS)
+        assert_evals_to(check_with_filter, context, CheckStatus.SUCCESS)

@@ -8,6 +8,16 @@ Changelog <https://keepachangelog.com/en/1.0.0/>`__, and this project
 adheres to `Semantic
 Versioning <https://semver.org/spec/v2.0.0.html>`__.
 
+
+[0.2.0] - TBD
+--------------------
+
+Added
+~~~~~
+
+- Added has_pattern and related checks (contains_email, contains_url and contains_credit_card_number)
+
+
 [0.1.0] - 2020-08-26
 --------------------
 
