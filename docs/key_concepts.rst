@@ -3,8 +3,9 @@ Key Concepts in the Code base
 
 Adapted from this `this document
 <https://raw.githubusercontent.com/awslabs/hooqu/master/docs/key-concepts.md>`_.
-This document is is targeted towards advanced users or contributors. The concepts here
-are not necessary to use ``hooqu``.
+
+This document is is targeted towards advanced users or contributors. These are mostly technical notes
+and not strictly necessary to ``hooqu``.
 
 There are a few key concepts that will help you to understand the
 code base.
@@ -36,8 +37,9 @@ hooqu follows the following process:
 - Metrics are also stored if a MetricsRepository is provided (future)
 - Checks are evaluated using the calculated Metrics
 
+
 Analyzers
-~~~~~~~~~
+----------
 
 Types of analyzers:
 
@@ -48,7 +50,7 @@ Types of analyzers:
   grouped by a set of columns before the metric can be calculated
 
 Metrics
-~~~~~~~
+--------
 
 A :class:`.Metric` includes the following key details
 
@@ -61,7 +63,7 @@ A :class:`.Metric` includes the following key details
   value varies between metrics.
 
 Metrics storage
-^^^^^^^^^^^^^^^
+---------------
 
 Metrics can be stored in a metrics repository. (not yet implemented)
 An entry in the repository consists of:
