@@ -7,7 +7,7 @@ Sphinx==3.2.1
 PyYAML==5.3.1
 tox==3.20.0
 coverage==5.2
-pytest==5.4.3
+pytest==6.2.3
 pytest-cov==2.10.0
 black==19.10b0
 hypothesis==5.34.1
