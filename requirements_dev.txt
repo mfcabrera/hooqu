@@ -3,7 +3,7 @@ punch.py==2.0.0
 wheel==0.34.2
 watchdog==0.10.3
 flake8==3.8.3
-Sphinx==3.2.1
+Sphinx==5.0.1
 PyYAML==5.3.1
 tox==3.20.0
 coverage==5.2
