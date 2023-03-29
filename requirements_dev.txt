@@ -9,7 +9,7 @@ tox==3.20.0
 coverage==5.2
 pytest==5.4.3
 pytest-cov==2.10.0
-black==19.10b0
+black==23.3.0
 hypothesis==5.34.1
 mypy==0.782
 mypy-extensions==0.4.3
