@@ -1,6 +1,6 @@
 pip==20.1.1
 punch.py==2.0.0
-wheel==0.34.2
+wheel==0.41.3
 watchdog==0.10.3
 flake8==3.8.3
 Sphinx==3.2.1
