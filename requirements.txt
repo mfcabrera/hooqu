@@ -1,4 +1,4 @@
 pandas>=1.0.0
 tryingsnake>=0.5.0
 more-itertools>=8.2.0
-typing_extensions==3.7.4.3
+typing_extensions==4.12.0
