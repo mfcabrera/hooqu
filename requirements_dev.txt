@@ -5,7 +5,7 @@ watchdog==0.10.3
 flake8==3.8.3
 Sphinx==3.2.1
 PyYAML==5.3.1
-tox==3.20.0
+tox==4.21.1
 coverage==5.2
 pytest==5.4.3
 pytest-cov==2.10.0
